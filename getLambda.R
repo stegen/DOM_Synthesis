@@ -241,8 +241,8 @@ get_lambda <- function(formula_matrix) {
 
 # user parameters ------------------------------------------------------
 
-outfile <- "//PNL/Projects/ECA_Project/VGC/Report_water_3-5/Output_Lambda/S19S_Water_Lambda.csv"
-fticr_data <-  read_csv("//PNL/Projects/ECA_Project/VGC/Report_water_3-5/Output_removed_poorly_calibrated/Processed_Clean_S19S_Water_3-5_Mol.csv")
+outfile <- "DOM_Synthesis_Lambda.csv"
+fticr_data <-  read_csv("Merged_Processed_Mol - 10-19-23.csv")
 
 
 
