@@ -14,7 +14,7 @@
 ###SBATCH --array=1-502%40 
 
 
-dir="$HOME/DOM_Synthesis"
+dir="$HOME/DOM_Synthesis/transformations_HPC"
 cd "$dir"
 
 in_dir="/vortexfs1/omics/kujawinski/data/DOMsynthesis"
