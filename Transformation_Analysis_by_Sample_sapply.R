@@ -32,7 +32,7 @@ if (reload.files == T) {
   samples.to.drop = names(formula.per.sample)[which(formula.per.sample == 0)]
   data = data[,-which(colnames(data) %in% samples.to.drop)]
   
-  mol = read.csv(list.files(pattern = "_Mol_Trim"), row.names = 1)
+  mol = read.csv(list.files(pattern = "_Mol_Trim.csv"), row.names = 1)
 
   data[1:5,1:5]
   mol[1:5,1:5]
@@ -78,7 +78,7 @@ if(!dir.exists("Transformations per Peak")){
 ###########################################
 
 # pull out just the sample names
-sample.to.restart = 'SO245_masslistsSO245.SPE002_028_01_1367.corems'
+sample.to.restart = 'SO245_masslistsSO245.SPE168_101_01_1423.corems'
 samples.to.process = colnames(data)[which(colnames(data) == sample.to.restart):ncol(data)]
 
 # error term
