@@ -42,10 +42,14 @@ This will let you open up an R window for testing on Poseidon (useful for testin
 ```R```\
 ```source("create_xset.R")``` (for example - could run the create_xset.R script)
 
-# get started
+## Get started --> do the calculations
+This will make all the individual csv files, one for each sample. This is done in a *for* loop and is not taking full advantage of the HPC.
 ```sbatch scripts_dir/step1-tforms1.slurm```
 
-#Misc notes here for now:
+```tforms-step2.R``` will do other things...have not written that code yet.
+
+## Misc notes here for now:
+Working here on poseidon:
 ```/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/scripts_dir```
 
 
