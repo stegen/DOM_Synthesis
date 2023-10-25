@@ -32,6 +32,6 @@ CONDA_BASE=$(conda info --base)
 source $CONDA_BASE/etc/profile.d/conda.sh
 conda activate untargKL4
 
-Rscript --no-save --no-restore --verbose $dir/scripts_dir/tforms1.R "$in_dir" "$SLURM_ARRAY_TASK_ID" "$out_dir" > "$log_dir/${SLURM_JOB_NAME}_${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID}.Rout" 2>&1 > "$log_dir/${SLURM_JOB_NAME}_$ionMode_${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID}.log"
-
+#Rscript --no-save --no-restore --verbose $dir/scripts_dir/tforms1.R "$in_dir" "$SLURM_ARRAY_TASK_ID" "$out_dir" > "$log_dir/${SLURM_JOB_NAME}_${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID}.Rout" 2>&1 > "$log_dir/${SLURM_JOB_NAME}_$ionMode_${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID}.log"
+Rscript --no-save --no-restore --verbose $dir/scripts_dir/tforms1.R "$in_dir" "$out_dir" > "$log_dir/${SLURM_JOB_NAME}.Rout" 2>&1 > "$log_dir/${SLURM_JOB_NAME}.log"
 echo `date`
