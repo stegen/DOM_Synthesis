@@ -51,7 +51,7 @@ This will make all the individual csv files, one for each sample. This is done i
 ## Get started --> do the calculations
 Now make this do the calculations in parallel - take better advantage of the HPC
 ```sbatch scripts_dir/step1-tforms_parallel.slurm```
-
+```sbatch scripts_dir/step2-tforms_parallel.slurm```
 
 ## Misc notes here for now:
 Working here on poseidon:
