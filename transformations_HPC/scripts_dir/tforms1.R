@@ -19,7 +19,7 @@ data = read.csv(list.files(path = dataPath,pattern = "DOM_Synthesis_Data_Trim.cs
 mol = read.csv(list.files(path = dataPath,pattern = "DOM_Synthesis_Mol_Trim",full.names=TRUE), row.names = 1)
 
 # Loading in transformations
-trans.full =  read.csv("Transformation_Database_07-2020.csv")
+trans.full =  read.csv("../Transformation_Database_07-2020.csv")
 trans.full$Name = as.character(trans.full$Name)
 
 # ############# #
