@@ -1,0 +1,10 @@
+#!/bin/csh
+
+#SBATCH -A stegen_sbr
+#SBATCH -t 0:30:0
+#SBATCH -n 3
+#SBATCH -p shared
+
+module load R/3.1.2
+
+Rscript betaMNTD_rand_reps.r $1 >& b.mntd.rep.$1.out 
