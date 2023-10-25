@@ -189,8 +189,8 @@ str(tot.trans)
 # tot.trans.merged = rbind(tot.trans,trans.temp)
 # write.csv(tot.trans.merged,paste(Sample_Name,"_Total_Transformations.csv", sep=""),quote = F,row.names = F)
 
-#KL change: write the one CSV file
-write.csv(tot.trans,paste(Sample_Name,"_Total_Transformations.csv", sep=""),quote = F,row.names = F)
+#KL change: write the one CSV file (No, already have one CSV file)
+#write.csv(tot.trans,paste(Sample_Name,"_Total_Transformations.csv", sep=""),quote = F,row.names = F)
 
 # write out the trans profiles across samples
 #write.csv(profiles.of.trans,paste(Sample_Name, "_Trans_Profiles.csv", sep=""),quote = F,row.names = F)
