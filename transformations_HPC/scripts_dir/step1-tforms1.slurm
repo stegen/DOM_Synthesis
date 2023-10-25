@@ -4,12 +4,9 @@
 #SBATCH --mail-type=FAIL,END
 #SBATCH --mail-user=klongnecker@whoi.edu
 #SBATCH --ntasks=1
-#SBATCH --mem=4gb
+#SBATCH --mem=4000
 #SBATCH --time=0:30:00
-##SBATCH --output=/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/logfiles_dir/step1-tforms.out
-##SBATCH --error=/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/logfiles_dir/step1-tforms.error
 
-#/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/output_dir
 dir="$HOME/DOM_Synthesis/transformations_HPC"
 cd "$dir"
 
@@ -30,7 +27,7 @@ echo This is task $SLURM_ARRAY_TASK_ID
 
 CONDA_BASE=$(conda info --base)
 source $CONDA_BASE/etc/profile.d/conda.sh
-conda activate untargKL4
+conda activate tformsKL1
 
 #Rscript --no-save --no-restore --verbose $dir/scripts_dir/tforms1.R "$in_dir" "$out_dir" > "$log_dir/${SLURM_JOB_NAME}.Rout" 2>&1 > "$log_dir/${SLURM_JOB_NAME}.log"
 Rscript --no-save --no-restore --verbose $dir/scripts_dir/tforms1.R "$in_dir"  > "$log_dir/${SLURM_JOB_NAME}.Rout" 2>&1 > "$log_dir/${SLURM_JOB_NAME}.log"
