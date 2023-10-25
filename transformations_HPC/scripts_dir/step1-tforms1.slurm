@@ -3,15 +3,12 @@
 #SBATCH --job-name=step1-tforms
 #SBATCH --mail-type=FAIL,END
 #SBATCH --mail-user=klongnecker@whoi.edu
-#SBATCH --ntasks-per-node=1
+#SBATCH --ntasks=1
 #SBATCH --mem=4gb
-#SBATCH --time=6:00:00
-#SBATCH --output=/vortexfs1/home/klongnecker/DOM_Synthesis/logfiles_dir/step1-tforms.out
-#SBATCH --error=/vortexfs1/home/klongnecker/DOM_Synthesis/logfiles_dir/step1-tforms.error
+#SBATCH --time=:30:00
+#SBATCH --output=/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/logfiles_dir/step1-tforms.out
+#SBATCH --error=/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/logfiles_dir/step1-tforms.error
 #SBATCH --array=1-68%40 
-
-#this is the numbers for 502 files do 1 to 502 files in batches of 40. If I use this, update to match what I have
-###SBATCH --array=1-502%40 
 
 #/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/output_dir
 dir="$HOME/DOM_Synthesis/transformations_HPC"
