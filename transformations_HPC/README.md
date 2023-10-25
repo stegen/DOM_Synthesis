@@ -48,6 +48,11 @@ This will make all the individual csv files, one for each sample. This is done i
 
 ```tforms-step2.R``` will do other things...have not written that code yet.
 
+## Get started --> do the calculations
+Now make this do the calculations in parallel - take better advantage of the HPC
+```sbatch scripts_dir/step1-tforms_parallel.slurm```
+
+
 ## Misc notes here for now:
 Working here on poseidon:
 ```/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/scripts_dir```
