@@ -16,16 +16,16 @@ Sample_Name = 'DOM_Syn_Trans'
 #######################
 #HPC - the hard coded version
 in_dir <- "/proj/omics/kujawinski/data/DOMsynthesis"
-out_dir <- "/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/output_dir"
+out_dir <- "/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/output_dir/"
 #HPC - the slurm script version
 #in_dir <- paste0(args[1])
 #out_dir <- paste0(args[2])
 
 #laptop, locl trouble shooting
 # in_dir <- "C:/Users/klongnecker/Documents/Dropbox/XX_DOMsynthesis_GreeceMtg/_data_from_2"
-# out_dir = getwd()
+# out_dir = "C:/Users/klongnecker/Documents/Dropbox/XX_DOMsynthesis_GreeceMtg/testing/"
 
-# Loading in ICR data (data are in dataPath)
+# Loading in ICR data (data here: in_dir)
 data = read.csv(list.files(path = in_dir,pattern = "DOM_Synthesis_Data_Trim.csv",full.names=TRUE), row.names = 1) # Keeping data and mol-data seperate to ensure they are unaltered
 mol = read.csv(list.files(path = in_dir,pattern = "DOM_Synthesis_Mol_Trim",full.names=TRUE), row.names = 1)
 
