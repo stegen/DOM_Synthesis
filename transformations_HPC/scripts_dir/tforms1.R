@@ -15,10 +15,10 @@ Sample_Name = 'DOM_Syn_Trans'
 ### Loading in data ###
 #######################
 #HPC - the hard coded version
-in_dir <- "/proj/omics/kujawinski/data/DOMsynthesis/"
-out_dir <- "/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/output_dir"
+#in_dir <- "/proj/omics/kujawinski/data/DOMsynthesis"
+#out_dir <- "/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/output_dir"
 #HPC - the slurm script version
-#in_dir <- paste0(args[1])
+in_dir <- paste0(args[1])
 #out_dir <- paste0(args[2])
 
 #laptop, locl trouble shooting
