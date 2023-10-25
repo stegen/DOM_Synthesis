@@ -6,6 +6,8 @@
 #SBATCH --ntasks=1
 #SBATCH --mem=4000
 #SBATCH --time=0:30:00
+#SBATCH --output=/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/logfiles_dir/step1.out
+#SBATCH --error=/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/logfiles_dir/step1.error
 
 dir="$HOME/DOM_Synthesis/transformations_HPC"
 cd "$dir"
