@@ -8,7 +8,7 @@
 #SBATCH --time=6:00:00
 #SBATCH --output=/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/logfiles_dir/step2P.out
 #SBATCH --error=/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/logfiles_dir/step2P.error
-#SBATCH --array=1-2500%50 
+#SBATCH --array=1-2500%10 
  
 dir="$HOME/DOM_Synthesis/transformations_HPC"
 cd "$dir"
