@@ -27,7 +27,7 @@ Sample_Name = 'DOM_Syn_Trans'
 #out_dir <- "/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/output_dir"
 #HPC - the slurm script version
 in_dir <- paste0(args[1])
-out_dir <- paste0(args[2])
+#out_dir <- "/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/output_dir"
 
 #laptop, locl trouble shooting
 #in_dir <- "C:/Users/klongnecker/Documents/Dropbox/XX_DOMsynthesis_GreeceMtg/_data_from_2"
