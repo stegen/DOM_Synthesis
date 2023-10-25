@@ -8,12 +8,12 @@
 #SBATCH --time=0:30:00
 #SBATCH --output=/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/logfiles_dir/step1.out
 #SBATCH --error=/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/logfiles_dir/step1.error
-
+ 
 dir="$HOME/DOM_Synthesis/transformations_HPC"
 cd "$dir"
 
 #in_dir="/vortexfs1/omics/kujawinski/data/DOMsynthesis"
-out_dir="$dir/output_dir"
+#out_dir="$dir/output_dir"
 log_dir="$dir/logfiles_dir" #need a folder to hold the output results text files - there are zillions of them. 
 
 if [ ! -d "$out_dir" ]; then
