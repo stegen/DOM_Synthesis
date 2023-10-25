@@ -15,11 +15,11 @@ Sample_Name = 'DOM_Syn_Trans'
 ### Loading in data ###
 #######################
 #HPC - the hard coded version
-#in_dir <- "/proj/omics/kujawinski/data/DOMsynthesis/"
-#out_dir <- "/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/output_dir"
+in_dir <- "/proj/omics/kujawinski/data/DOMsynthesis/"
+out_dir <- "/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/output_dir"
 #HPC - the slurm script version
-in_dir <- paste0(args[1])
-out_dir <- paste0(args[2])
+#in_dir <- paste0(args[1])
+#out_dir <- paste0(args[2])
 
 #laptop, locl trouble shooting
 #in_dir <- "C:/Users/klongnecker/Documents/Dropbox/XX_DOMsynthesis_GreeceMtg/_data_from_2"
@@ -30,8 +30,7 @@ data = read.csv(list.files(path = in_dir,pattern = "DOM_Synthesis_Data_Trim.csv"
 mol = read.csv(list.files(path = in_dir,pattern = "DOM_Synthesis_Mol_Trim",full.names=TRUE), row.names = 1)
 
 # Loading in transformations
-#trans.full =  read.csv(list.files(path = in_dir,pattern= "Transformation_Database_07-2020.csv"))
-trans.full = read.csv("Transformation_Database_07-2020.csv")
+trans.full =  read.csv(list.files(path = in_dir,pattern= "Transformation_Database_07-2020.csv"))
 trans.full$Name = as.character(trans.full$Name)
 
 # ############# #
