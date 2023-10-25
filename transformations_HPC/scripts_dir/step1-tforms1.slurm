@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --partition=compute
-#SBATCH --job-name=step1-tforms
+#SBATCH --job-name=step1
 #SBATCH --mail-type=FAIL,END
 #SBATCH --mail-user=klongnecker@whoi.edu
 #SBATCH --ntasks=1
