@@ -1,11 +1,11 @@
 #!/bin/bash
-#SBATCH --partition=compute
+#SBATCH --partition=bigmem
 #SBATCH --job-name=step1
 #SBATCH --mail-type=FAIL,END
 #SBATCH --mail-user=klongnecker@whoi.edu
 #SBATCH --ntasks=1
-#SBATCH --mem=4000
-#SBATCH --time=0:30:00
+#SBATCH --mem=750gb
+#SBATCH --time=4:30:00
 #SBATCH --output=/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/logfiles_dir/step1.out
 #SBATCH --error=/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/logfiles_dir/step1.error
  

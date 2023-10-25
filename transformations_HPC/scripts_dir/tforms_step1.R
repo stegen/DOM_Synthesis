@@ -79,9 +79,9 @@ counter = 0
 #idx <- 2
 
 #KL changed syntax a little because my brain operates this way
-#for (idx in 1:length(samples.to.process)) {
+for (idx in 1:length(samples.to.process)) {
 #for (idx in 2:2) {
-for (idx in 1:5) {
+#for (idx in 1:5) {
   
   current.sample <- samples.to.process[idx] #KL added for testing one sample
 
