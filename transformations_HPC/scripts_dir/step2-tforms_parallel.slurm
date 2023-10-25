@@ -5,7 +5,7 @@
 #SBATCH --mail-user=klongnecker@whoi.edu
 #SBATCH --ntasks-per-node=1
 #SBATCH --mem=4gb
-#SBATCH --time=0:10:00
+#SBATCH --time=0:05:00
 #SBATCH --output=/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/logfiles_dir/step2P.out
 #SBATCH --error=/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/logfiles_dir/step2P.error
 #SBATCH --array=1-2028%10 
