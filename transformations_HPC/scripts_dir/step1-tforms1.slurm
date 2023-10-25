@@ -8,7 +8,6 @@
 #SBATCH --time=0:30:00
 #SBATCH --output=/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/logfiles_dir/step1-tforms.out
 #SBATCH --error=/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/logfiles_dir/step1-tforms.error
-#SBATCH --array=1-68%40 
 
 #/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/output_dir
 dir="$HOME/DOM_Synthesis/transformations_HPC"
