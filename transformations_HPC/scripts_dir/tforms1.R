@@ -1,5 +1,6 @@
 # Set up R script from James Stegen (PNNL) R script on transformations for an HPC
 #KL 25 October 2023
+# Make sure path is set for HPC or laptop...depending on where this is getting run
 args = commandArgs(trailingOnly=TRUE)
 library(dplyr)
 library(tidyr)
@@ -15,7 +16,7 @@ paste("This is task", Sys.getenv('SLURM_ARRAY_TASK_ID'))
 # usePath <- paste0(args[1])
 # output_dir <- paste0(args[2])
 
-#this will get used later, but I need some input on what role this serves (beyond naming folders)
+#this will get used later as part of folder names, just leave for now
 Sample_Name = 'DOM_Syn_Trans'
 
 #######################
@@ -58,9 +59,9 @@ if(max(data) > 1){
 
 #KL turn this off for the moment, will use slurm to set output_dir
 # # Creating output directories
-# if(!dir.exists("Transformation Peak Comparisons")){
-#   dir.create("Transformation Peak Comparisons")
-# }
+if(!dir.exists("Transformation Peak Comparisons")){
+  dir.create("Transformation Peak Comparisons")
+}
 # 
 # if(!dir.exists("Transformations per Peak")){
 #   dir.create("Transformations per Peak")
@@ -170,37 +171,7 @@ if (nrow(Sample_Peak_Mat >= 2) & nrow(Sample_Peak_Mat) < 5000) {
   
   #####
   
-  # generate transformation profile for the sample
-  #trans.profile = as.data.frame(tapply(X = Distance_Results$Trans.name,INDEX = Distance_Results$Trans.name,FUN = 'length')); head(trans.profile)
-  #colnames(trans.profile) = dist.unique
-  #head(trans.profile)
-  
-  # update the profile matrix
-  #profiles.of.trans = merge(x = profiles.of.trans,y = trans.profile,by.x = "Name",by.y = 0,all.x = T)
-  #profiles.of.trans[is.na(profiles.of.trans[,dist.unique]),dist.unique] = 0
-  #head(profiles.of.trans)
-  #str(profiles.of.trans)
-  
-  # find the number of transformations each peak was associated with
-  #peak.stack = as.data.frame(c(Distance_Results$peak.x,Distance_Results$peak.y)); head(peak.stack)
-  #peak.profile = as.data.frame(tapply(X = peak.stack[,1],INDEX = peak.stack[,1],FUN = 'length' )); dim(peak.profile)
-  #colnames(peak.profile) = 'num.trans.involved.in'
-  #peak.profile$sample = dist.unique
-  #peak.profile$peak = row.names(peak.profile)
-  #head(peak.profile);
-  
-  # Creating directory if it doesn't exist, prior to writing the output file
-  #if(length(grep(Sample_Name,list.dirs("Transformations per Peak", recursive = F))) == 0){
-  #  dir.create(paste("Transformations per Peak/", Sample_Name, sep=""))
-  #  print("Directory created")
-  #}
-  
-  # Writing data to newly created directory
-  #write.csv(peak.profile,paste("Transformations per Peak/",Sample_Name,"/Num.Peak.Trans_",dist.unique,".csv",sep=""),quote = F,row.names = F)
-  
-  # Alternative .csv writing
-  # write.csv(peak.profile,paste("Transformations per Peak/", "Num.Peak.Trans_",dist.unique,".csv",sep=""),quote = F,row.names = F)
-  
+  #pulled text that was commented out - in tforms2.R for now
   print(dist.unique)
   print(date())
   
