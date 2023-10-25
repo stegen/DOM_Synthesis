@@ -13,9 +13,11 @@
 #this is the numbers for 502 files do 1 to 502 files in batches of 40. If I use this, update to match what I have
 ###SBATCH --array=1-502%40 
 
-
+#/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/output_dir
 dir="$HOME/DOM_Synthesis/transformations_HPC"
 cd "$dir"
+
+
 
 in_dir="/vortexfs1/omics/kujawinski/data/DOMsynthesis"
 out_dir="$dir/output_dir/$SLURM_JOB_NAME"

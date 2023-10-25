@@ -22,14 +22,19 @@ Sample_Name = 'DOM_Syn_Trans'
 #######################
 ### Loading in data ###
 #######################
-#HPC
-dataPath <- "/proj/omics/kujawinski/data/DOMsynthesis/"
+#HPC - the hard coded version
+in_dir <- "/proj/omics/kujawinski/data/DOMsynthesis/"
+out_dir <- "/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/output_dir"
+#HPC - the slurm script version
+#in_dir <- paste0(args[1])
+#out_dir <- paste0(args[2])
+
 #laptop
 #dataPath <- "C:/Users/klongnecker/Documents/Dropbox/XX_DOMsynthesis_GreeceMtg/_data_from_2"
 
 # Loading in ICR data (data are in dataPath)
-data = read.csv(list.files(path = dataPath,pattern = "DOM_Synthesis_Data_Trim.csv",full.names=TRUE), row.names = 1) # Keeping data and mol-data seperate to ensure they are unaltered
-mol = read.csv(list.files(path = dataPath,pattern = "DOM_Synthesis_Mol_Trim",full.names=TRUE), row.names = 1)
+data = read.csv(list.files(path = in_dir,pattern = "DOM_Synthesis_Data_Trim.csv",full.names=TRUE), row.names = 1) # Keeping data and mol-data seperate to ensure they are unaltered
+mol = read.csv(list.files(path = in_dir,pattern = "DOM_Synthesis_Mol_Trim",full.names=TRUE), row.names = 1)
 
 # Loading in transformations
 trans.full =  read.csv("../Transformation_Database_07-2020.csv")
@@ -147,7 +152,7 @@ if (nrow(Sample_Peak_Mat >= 2) & nrow(Sample_Peak_Mat) < 5000) {
   # }
   
   #write.csv(Distance_Results,paste(output_dir,"/Transformation Peak Comparisons/",Sample_Name,"/Peak.2.Peak_",dist.unique,".csv",sep=""),quote = F,row.names = F)
-  write.csv(Distance_Results,paste("Peak.2.Peak_",dist.unique,".csv",sep=""),quote = F,row.names = F)
+  write.csv(Distance_Results,paste(out_dir,"Peak.2.Peak_",dist.unique,".csv",sep=""),quote = F,row.names = F)
   
   # Alternative .csv writing
   # write.csv(Distance_Results,paste("Transformation Peak Comparisons/", "Peak.2.Peak_",dist.unique,".csv",sep=""),quote = F,row.names = F)
@@ -195,32 +200,3 @@ str(tot.trans)
 # write out the trans profiles across samples
 #write.csv(profiles.of.trans,paste(Sample_Name, "_Trans_Profiles.csv", sep=""),quote = F,row.names = F)
 
-
-
-
-
-# Biocparallel setting
-register(BPPARAM = MulticoreParam(workers=36))
-
-data = read.csv(list.files(path = dataPath,pattern = "DOM_Synthesis_Data_Trim.csv",full.names=TRUE), row.names = 1) # Keeping data and mol-data seperate to ensure they are unaltered
-mol = read.csv(list.files(path=dataPath,pattern = "DOM_Synthesis_Mol_Trim",full.names=TRUE), row.names = 1)
-
-
-
-## List all peak picked files and sort order by file number
-#input <- mixedsort(list.files(input_dir, pattern = glob2rx(paste0("xcms1-",ionMode,"*",ext)), full.names = T),decreasing=T)
-
-## Combine into single object
-#input_l <- lapply(input, readRDS)
-#xset <- input_l[[1]]
-#for(i in 2:length(input_l)) {
-#  set <- input_l[[i]]
-#  xset <- c(xset, set)
-#  print(i)
-#  }
-#rm(input,input_l)
-
-## Save as R object
-#save(list=c("xset"), file = paste0(input_dir,"/xset-",ionMode,".RData"))
-
-date()
