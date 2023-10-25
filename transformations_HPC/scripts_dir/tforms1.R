@@ -1,6 +1,8 @@
 # Use this as a model for some R script to come from James to run the transformations
 #KL 25 October 2023
 args = commandArgs(trailingOnly=TRUE)
+library(dplyr)
+library(tidyr)
 
 date()
 paste("This is task", Sys.getenv('SLURM_ARRAY_TASK_ID'))
@@ -97,6 +99,7 @@ one.sample.matrix = cbind(as.numeric(as.character(row.names(data))), data[,which
 colnames(one.sample.matrix) = c("peak", colnames(one.sample.matrix[2]))
 # print(head(one.sample.matrix))
 
+#why is this not working on the HPC? put newer tidyr into yml file...still have issues
 Sample_Peak_Mat <- one.sample.matrix %>% gather("sample", "value", -1) %>% filter(value > 0) %>% select(sample, peak)
 
 if (nrow(Sample_Peak_Mat >= 2) & nrow(Sample_Peak_Mat) < 5000) {
