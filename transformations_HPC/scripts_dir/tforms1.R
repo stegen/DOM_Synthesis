@@ -208,7 +208,7 @@ if (nrow(Sample_Peak_Mat >= 2) & nrow(Sample_Peak_Mat) < 5000) {
 
 print(counter)
 
-} end #end of loop starting: for (current.sample in samples.to.process) { 
+#} end #end of loop starting: for (current.sample in samples.to.process) { 
 
 # format the total transformations matrix and write it out
 tot.trans = as.data.frame(tot.trans)
