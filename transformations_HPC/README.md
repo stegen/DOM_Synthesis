@@ -31,6 +31,16 @@ You only have to create the environment once, anytime you want it in the future,
 
 Remember that each sbatch command creates a new compute environment, so all the slurm scripts all have this statement in them: ```conda activate tformsKL1``` where tformsKL1 is the name established by the yml file above. Also remember that you have activate the module with conda before doing anything (see above in the step about accessing Poseidon, repeating here because I keep forgetting).
 
-## Step1 ...read in the data files
+## Misc. handy functions
+```conda info --envs```\
+```conda search r-base```\
+```squeue -u klongnecker```
+
+This will let you open up an R window for testing on Poseidon (useful for testing):\
+```srun -p compute --time=01:00:00 --ntasks-per-node=1 --mem=10gb --pty bash```\
+```conda activate tformsKL1```\
+```R```\
+```source("create_xset.R")``` (for example - could run the create_xset.R script)
+
 
 

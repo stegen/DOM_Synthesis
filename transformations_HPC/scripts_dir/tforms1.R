@@ -1,6 +1,6 @@
 # Use this as a model for some R script to come from James to run the transformations
+#KL 25 October 2023
 args = commandArgs(trailingOnly=TRUE)
-suppressMessages(library(xcms))
 
 date()
 paste("This is task", Sys.getenv('SLURM_ARRAY_TASK_ID'))
