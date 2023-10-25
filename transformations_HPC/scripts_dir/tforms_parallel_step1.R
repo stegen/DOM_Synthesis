@@ -25,7 +25,7 @@ Sample_Name = 'DOM_Syn_Trans'
 in_dir <- paste0(args[1])
 out_dir <- paste0(args[2])
 
-#laptop, locl trouble shooting
+#laptop, local trouble shooting
 # in_dir <- "C:/Users/klongnecker/Documents/Dropbox/XX_DOMsynthesis_GreeceMtg/_data_from_2"
 # out_dir = "C:/Users/klongnecker/Documents/Dropbox/XX_DOMsynthesis_GreeceMtg/testing/"
 

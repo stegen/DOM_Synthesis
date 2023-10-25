@@ -2,9 +2,15 @@
 # Use this version to set this up as a set of parallel processes
 #now do the transformation calculations
 #KL 25 October 2023
-
 library(dplyr)
 library(tidyr)
+
+#HPC - the slurm script version
+in_dir <- paste0(args[1])
+out_dir_summary <- paste0(args[2])
+
+#laptop, local trouble shooting
+# out_dir_summary = "C:/Users/klongnecker/Documents/Dropbox/XX_DOMsynthesis_GreeceMtg/testing/"
 
 # Load metadata object
 file_list <- paste0("samplesToProcess",".txt")
@@ -12,7 +18,7 @@ files <- read.table(file = file_list,sep="\t",header=TRUE)
 
 # File to process based on array number
 f<- as.numeric(paste0(args[3]))
-current.sample <- files$FileWithExtension[f]
+current.sample <- files[f,]
 
 ###########################################
 ### Running through the transformations ###
@@ -32,14 +38,10 @@ tot.trans = numeric()
 #profiles.of.trans = trans.full
 #head(profiles.of.trans)
 
-counter = 0
-
-#for loop started here
+#for loop started here (in asReceived code)
   #current.sample <- samples.to.process[idx] #KL added for testing one sample
   #set current sample above
 
-  counter = counter + 1
-  
   print(date())
   
   one.sample.matrix = cbind(as.numeric(as.character(row.names(data))), data[,which(colnames(data) == current.sample), drop = FALSE]) # "drop = FALSE" ensures that the row and column names remain associated with the data
@@ -84,28 +86,17 @@ counter = 0
     # write.csv(Distance_Results,paste("Transformation Peak Comparisons/", "Peak.2.Peak_",dist.unique,".csv",sep=""),quote = F,row.names = F)
     
     # sum up the number of transformations and update the matrix
-    tot.trans = rbind(tot.trans,c(dist.unique,nrow(Distance_Results),nrow(Sample_Peak_Mat),nrow(Distance_Results)/nrow(Sample_Peak_Mat)))
-    
-    ##### write out current tot.trans in case crash
-    #KL turn this off for now
-   #  # format the total transformations matrix and write it out
-   #  tot.trans.out = as.data.frame(tot.trans)
-   #  colnames(tot.trans.out) = c('sample','total.transformations','num.of.formulas','normalized.trans')
-   #  tot.trans.out$sample = as.character(tot.trans.out$sample)
-   #  tot.trans.out$total.transformations = as.numeric(as.character(tot.trans.out$total.transformations))
-   # # write.csv(tot.trans.out,paste(output_dir,"/",Sample_Name,"_Total_Transformations_Temp.csv", sep=""),quote = F,row.names = F)
-   #  write.csv(tot.trans.out,paste(Sample_Name,"_Total_Transformations_Temp.csv", sep=""),quote = F,row.names = F)
-   #  
-    #####
-    
-    #pulled text that was commented out - in tforms2.R for now
-    print(dist.unique)
-    print(date())
+    #tot.trans = rbind(tot.trans,c(dist.unique,nrow(Distance_Results),nrow(Sample_Peak_Mat),nrow(Distance_Results)/nrow(Sample_Peak_Mat)))
+    #change this - export out one line and use that to assemble the details needed from each sample later
+    tot.trans <- c(dist.unique,nrow(Distance_Results),nrow(Sample_Peak_Mat),nrow(Distance_Results)/nrow(Sample_Peak_Mat))
+    #make this one row, with headers
+    tot.trans <- t(tot.trans)
+    colnames <- c("dist.unique","nDistance_Results","n_Sample_Peak_Mat","n_ratio")
+    colnames(tot.trans) <- colnames 
+    #now write that to a text file
+    write.csv(tot.trans,paste(out_dir_summary,"Summary_",dist.unique,".csv",sep=""),quote = F,row.names = F)
     
   }
   
-  print(counter)
-
-#} ###end #close the loop starting: for (current.sample in samples.to.process) { 
 
 
