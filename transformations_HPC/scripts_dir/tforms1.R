@@ -8,14 +8,6 @@ library(tidyr)
 date()
 paste("This is task", Sys.getenv('SLURM_ARRAY_TASK_ID'))
 
-# #use these rows for troubleshooting locally
-# in_dir="C:/Users/klongnecker/Documents/Dropbox/XX_DOMsynthesis_GreeceMtg/_data_from_2"
-# usePath <- paste0(in_dir)
-# 
-# #this is the version for the HPC and the slurm script
-# usePath <- paste0(args[1])
-# output_dir <- paste0(args[2])
-
 #this will get used later as part of folder names, just leave for now
 Sample_Name = 'DOM_Syn_Trans'
 
@@ -27,7 +19,7 @@ Sample_Name = 'DOM_Syn_Trans'
 #out_dir <- "/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/output_dir"
 #HPC - the slurm script version
 in_dir <- paste0(args[1])
-#out_dir <- "/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/output_dir"
+out_dir <- paste0(args[2])
 
 #laptop, locl trouble shooting
 #in_dir <- "C:/Users/klongnecker/Documents/Dropbox/XX_DOMsynthesis_GreeceMtg/_data_from_2"
@@ -60,19 +52,6 @@ if(max(data) > 1){
   print("Data was not presence/absence")
   data[data > 0] = 1
 }
-
-#output_dir
-
-# #KL turn this off for the moment, will use slurm to set output_dir
-# # # Creating output directories
-# if(!dir.exists("Transformation Peak Comparisons")){
-#   dir.create("Transformation Peak Comparisons")
-# }
-# 
-# if(!dir.exists("Transformations per Peak")){
-#   dir.create("Transformations per Peak")
-# }
-
 
 ###########################################
 ### Running through the transformations ###
@@ -128,10 +107,8 @@ if (nrow(Sample_Peak_Mat >= 2) & nrow(Sample_Peak_Mat) < 5000) {
   date()
   
   # Finding transformations which match observed mass differences (within error)
-  #KL note: use sapply, easier than trying to install pbapply on the HPC
-  # FYI - this is a slow step
+  #KL note: use sapply, easier than trying to install pbapply on the HPC, FYI: slow step
   mass.diff <- sapply(X = trans.full$Mass, function(x) which(Distance_Results$Dist.plus >= x & Distance_Results$Dist.minus <= x), USE.NAMES = T)
-  
   
   # Setting names of resulting list
   names(mass.diff) = trans.full$Name
@@ -144,13 +121,6 @@ if (nrow(Sample_Peak_Mat >= 2) & nrow(Sample_Peak_Mat) < 5000) {
   
   Distance_Results = Distance_Results[-which(Distance_Results$Trans.name == -999),]
   head(Distance_Results)
-  
-  #Turn this off for the moment
-  # # Creating directory if it doesn't exist, prior to writing the output file
-  # if(length(grep(Sample_Name,list.dirs("Transformation Peak Comparisons", recursive = F))) == 0){
-  #   dir.create(paste("/Transformation Peak Comparisons/", Sample_Name, sep=""))
-  #   print("Directory created")
-  # }
   
   #write.csv(Distance_Results,paste(output_dir,"/Transformation Peak Comparisons/",Sample_Name,"/Peak.2.Peak_",dist.unique,".csv",sep=""),quote = F,row.names = F)
   write.csv(Distance_Results,paste(out_dir,"Peak.2.Peak_",dist.unique,".csv",sep=""),quote = F,row.names = F)
@@ -183,21 +153,4 @@ print(counter)
 
 #} end #close the loop starting: for (current.sample in samples.to.process) { 
 
-# format the total transformations matrix and write it out
-tot.trans = as.data.frame(tot.trans)
-#In the final file, have the following:
-colnames(tot.trans) = c('sample','total.transformations','num.of.formulas','normalized.trans')
-tot.trans$sample = as.character(tot.trans$sample)
-tot.trans$total.transformations = as.numeric(as.character(tot.trans$total.transformations))
-str(tot.trans)
-
-# #KL trans.temp is the prior data file, new data appended 
-# tot.trans.merged = rbind(tot.trans,trans.temp)
-# write.csv(tot.trans.merged,paste(Sample_Name,"_Total_Transformations.csv", sep=""),quote = F,row.names = F)
-
-#KL change: write the one CSV file (No, already have one CSV file)
-#write.csv(tot.trans,paste(Sample_Name,"_Total_Transformations.csv", sep=""),quote = F,row.names = F)
-
-# write out the trans profiles across samples
-#write.csv(profiles.of.trans,paste(Sample_Name, "_Trans_Profiles.csv", sep=""),quote = F,row.names = F)
 

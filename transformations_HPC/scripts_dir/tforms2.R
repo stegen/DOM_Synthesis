@@ -1,5 +1,14 @@
-#nothing here for now - could become the downstream analysis of the transformations
+#ownstream analysis of the transformations, now that all the files have been made, do stuff
 #pulled from James' original script
+
+# format the total transformations matrix and write it out
+tot.trans = as.data.frame(tot.trans)
+#In the final file, have the following:
+colnames(tot.trans) = c('sample','total.transformations','num.of.formulas','normalized.trans')
+tot.trans$sample = as.character(tot.trans$sample)
+tot.trans$total.transformations = as.numeric(as.character(tot.trans$total.transformations))
+str(tot.trans)
+
 
 # generate transformation profile for the sample
 #trans.profile = as.data.frame(tapply(X = Distance_Results$Trans.name,INDEX = Distance_Results$Trans.name,FUN = 'length')); head(trans.profile)
