@@ -42,7 +42,8 @@ This will let you open up an R window for testing on Poseidon (useful for testin
 ```R```\
 ```source("create_xset.R")``` (for example - could run the create_xset.R script)
 
-
+# get started
+```sbatch scripts_dir/step1-tforms1.slurm```
 
 #Misc notes here for now:
 ```/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/scripts_dir```
