@@ -144,7 +144,8 @@ if (nrow(Sample_Peak_Mat >= 2) & nrow(Sample_Peak_Mat) < 5000) {
   #   print("Directory created")
   # }
   
-  write.csv(Distance_Results,paste(output_dir,"/Transformation Peak Comparisons/",Sample_Name,"/Peak.2.Peak_",dist.unique,".csv",sep=""),quote = F,row.names = F)
+  #write.csv(Distance_Results,paste(output_dir,"/Transformation Peak Comparisons/",Sample_Name,"/Peak.2.Peak_",dist.unique,".csv",sep=""),quote = F,row.names = F)
+  write.csv(Distance_Results,paste("/Transformation Peak Comparisons/",Sample_Name,"/Peak.2.Peak_",dist.unique,".csv",sep=""),quote = F,row.names = F)
   
   # Alternative .csv writing
   # write.csv(Distance_Results,paste("Transformation Peak Comparisons/", "Peak.2.Peak_",dist.unique,".csv",sep=""),quote = F,row.names = F)
@@ -158,7 +159,8 @@ if (nrow(Sample_Peak_Mat >= 2) & nrow(Sample_Peak_Mat) < 5000) {
   colnames(tot.trans.out) = c('sample','total.transformations','num.of.formulas','normalized.trans')
   tot.trans.out$sample = as.character(tot.trans.out$sample)
   tot.trans.out$total.transformations = as.numeric(as.character(tot.trans.out$total.transformations))
-  write.csv(tot.trans.out,paste(output_dir,"/",Sample_Name,"_Total_Transformations_Temp.csv", sep=""),quote = F,row.names = F)
+ # write.csv(tot.trans.out,paste(output_dir,"/",Sample_Name,"_Total_Transformations_Temp.csv", sep=""),quote = F,row.names = F)
+  write.csv(tot.trans.out,paste(Sample_Name,"_Total_Transformations_Temp.csv", sep=""),quote = F,row.names = F)
   
   #####
   
@@ -212,7 +214,7 @@ str(tot.trans)
 # #KL where does trans.temp come from? only have prior...think about this later
 # tot.trans.merged = rbind(tot.trans,trans.temp)
 # write.csv(tot.trans.merged,paste(Sample_Name,"_Total_Transformations.csv", sep=""),quote = F,row.names = F)
-write.csv(tot.trans,paste(output_dir,"/",Sample_Name,"_Total_Transformations.csv", sep=""),quote = F,row.names = F)
+write.csv(tot.trans,paste(Sample_Name,"_Total_Transformations.csv", sep=""),quote = F,row.names = F)
 
 # write out the trans profiles across samples
 #write.csv(profiles.of.trans,paste(Sample_Name, "_Trans_Profiles.csv", sep=""),quote = F,row.names = F)
