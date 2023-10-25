@@ -12,7 +12,7 @@
 dir="$HOME/DOM_Synthesis/transformations_HPC"
 cd "$dir"
 
-in_dir="/vortexfs1/omics/kujawinski/data/DOMsynthesis"
+#in_dir="/vortexfs1/omics/kujawinski/data/DOMsynthesis"
 out_dir="$dir/output_dir"
 log_dir="$dir/logfiles_dir" #need a folder to hold the output results text files - there are zillions of them. 
 
@@ -32,5 +32,5 @@ source $CONDA_BASE/etc/profile.d/conda.sh
 conda activate tformsKL1
 
 #Rscript --no-save --no-restore --verbose $dir/scripts_dir/tforms1.R "$in_dir" "$out_dir" > "$log_dir/${SLURM_JOB_NAME}.Rout" 2>&1 > "$log_dir/${SLURM_JOB_NAME}.log"
-Rscript --no-save --no-restore --verbose $dir/scripts_dir/tforms1.R "$in_dir" > "$log_dir/${SLURM_JOB_NAME}.Rout" 2>&1 > "$log_dir/${SLURM_JOB_NAME}.log"
+Rscript --no-save --no-restore --verbose $dir/scripts_dir/tforms1.R > "$log_dir/${SLURM_JOB_NAME}.Rout" 2>&1 > "$log_dir/${SLURM_JOB_NAME}.log"
 echo `date`
