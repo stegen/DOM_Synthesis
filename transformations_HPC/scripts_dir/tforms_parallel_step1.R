@@ -57,5 +57,11 @@ if(max(data) > 1){
   data[data > 0] = 1
 }
 
+#export some metadata, only need the file name, 
+# need to export this as a CSV file to have something in the next stage to use
 
+# pull out just the sample names
+samples.to.process = colnames(data)
+
+write.table(samples.to.process,paste0("samplesToProcess",".txt"),append = FALSE, sep = "\t",row.names = FALSE,col.names=FALSE)
 

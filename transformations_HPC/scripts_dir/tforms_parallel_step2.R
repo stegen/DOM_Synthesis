@@ -1,66 +1,26 @@
 # Set up R script from James Stegen (PNNL) R script on transformations for an HPC
 # Use this version to set this up as a set of parallel processes
+#now do the transformation calculations
 #KL 25 October 2023
 
-# Make sure path is set for HPC or laptop...depending on where this is getting run
-args = commandArgs(trailingOnly=TRUE)
 library(dplyr)
 library(tidyr)
 
-date()
-paste("This is task", Sys.getenv('SLURM_ARRAY_TASK_ID'))
+# Load metadata object
+file_list <- paste0("samplesToProcess",".txt")
+files <- read.table(file = file_list,sep="\t",header=TRUE)
 
-#this will get used later as part of folder names, just leave for now
-Sample_Name = 'DOM_Syn_Trans'
-
-#######################
-### Loading in data ###
-#######################
-#HPC - the hard coded version (lazy)
-in_dir <- "/proj/omics/kujawinski/data/DOMsynthesis"
-out_dir <- "/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/output_dir_parallel/"
-#HPC - the slurm script version
-#in_dir <- paste0(args[1])
-#out_dir <- paste0(args[2])
-
-#laptop, locl trouble shooting
-# in_dir <- "C:/Users/klongnecker/Documents/Dropbox/XX_DOMsynthesis_GreeceMtg/_data_from_2"
-# out_dir = "C:/Users/klongnecker/Documents/Dropbox/XX_DOMsynthesis_GreeceMtg/testing/"
-
-# Loading in ICR data (data here: in_dir)
-data = read.csv(list.files(path = in_dir,pattern = "DOM_Synthesis_Data_Trim.csv",full.names=TRUE), row.names = 1) # Keeping data and mol-data seperate to ensure they are unaltered
-mol = read.csv(list.files(path = in_dir,pattern = "DOM_Synthesis_Mol_Trim",full.names=TRUE), row.names = 1)
-
-# Loading in transformations
-trans.full =  read.csv(list.files(path = in_dir,pattern= "Transformation_Database_07-2020.csv",full.names=TRUE))
-trans.full$Name = as.character(trans.full$Name)
-
-# ############# #
-#### Errors ####
-# ############ #
-
-# Checking row names consistency between molecular info and data
-if(identical(x = row.names(data), y = row.names(mol)) == FALSE){
-  stop("Something is incorrect: the mol. info and peak counts don't match")
-}
-
-# Checking to ensure ftmsRanalysis was run
-if(length(which(mol$C13 == 1)) > 0){
-  stop("Isotopic signatures weren't removed")
-}
-
-# Probably not necessary, but checking for presence/absence
-if(max(data) > 1){
-  print("Data was not presence/absence")
-  data[data > 0] = 1
-}
+# File to process based on array number
+f<- as.numeric(paste0(args[3]))
+current.sample <- files$FileWithExtension[f]
 
 ###########################################
 ### Running through the transformations ###
 ###########################################
 
-# pull out just the sample names
-samples.to.process = colnames(data)
+# # pull out just the sample names
+#KL note - this is now in prior step
+# samples.to.process = colnames(data)
 
 # error term
 error.term = 0.000010
@@ -74,18 +34,9 @@ tot.trans = numeric()
 
 counter = 0
 
-#as received
-#for (current.sample in samples.to.process) {
-
-#from James (testing), this sample will work: Behnke2022_2020February20NegESI_Fen_OiL_0724_i.corems
-#idx <- 2
-
-#KL changed syntax a little because my brain operates this way
-for (idx in 1:length(samples.to.process)) {
-#for (idx in 2:2) {
-#for (idx in 1:5) {
-  
-  current.sample <- samples.to.process[idx] #KL added for testing one sample
+#for loop started here
+  #current.sample <- samples.to.process[idx] #KL added for testing one sample
+  #set current sample above
 
   counter = counter + 1
   
@@ -155,6 +106,6 @@ for (idx in 1:length(samples.to.process)) {
   
   print(counter)
 
-} ###end #close the loop starting: for (current.sample in samples.to.process) { 
+#} ###end #close the loop starting: for (current.sample in samples.to.process) { 
 
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --partition=bigmem
 #SBATCH --job-name=step1
-#SBATCH --mail-type=FAIL,END
+#SBATCH --mail-type=END
 #SBATCH --mail-user=klongnecker@whoi.edu
 #SBATCH --ntasks=1
 #SBATCH --mem=750gb

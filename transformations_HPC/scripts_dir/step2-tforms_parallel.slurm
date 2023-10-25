@@ -1,13 +1,14 @@
 #!/bin/bash
 #SBATCH --partition=compute
-#SBATCH --job-name=step1P
+#SBATCH --job-name=step2P
 #SBATCH --mail-type=END
 #SBATCH --mail-user=klongnecker@whoi.edu
-#SBATCH --ntasks=1
-#SBATCH --mem=4000
-#SBATCH --time=4:30:00
-#SBATCH --output=/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/logfiles_dir/step1P.out
-#SBATCH --error=/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/logfiles_dir/step1P.error
+#SBATCH --ntasks-per-node=1
+#SBATCH --mem=4gb
+#SBATCH --time=6:00:00
+#SBATCH --output=/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/logfiles_dir/step2P.out
+#SBATCH --error=/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/logfiles_dir/step2P.error
+#SBATCH --array=1-2500%50 
  
 dir="$HOME/DOM_Synthesis/transformations_HPC"
 cd "$dir"
@@ -31,5 +32,5 @@ CONDA_BASE=$(conda info --base)
 source $CONDA_BASE/etc/profile.d/conda.sh
 conda activate tformsKL1
 
-Rscript --no-save --no-restore --verbose $dir/scripts_dir/tforms_parallel_step1.R "$in_dir" "$out_dir" > "$log_dir/${SLURM_JOB_NAME}.Rout" 2>&1 > "$log_dir/${SLURM_JOB_NAME}.log"
+Rscript --no-save --no-restore --verbose $dir/scripts_dir/tforms_parallel_step2.R "$in_dir" "$out_dir" "$SLURM_ARRAY_TASK_ID"> "$log_dir/${SLURM_JOB_NAME}.Rout" 2>&1 > "$log_dir/${SLURM_JOB_NAME}.log"
 echo `date`
