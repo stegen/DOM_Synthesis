@@ -16,6 +16,8 @@ paste("This is task", Sys.getenv('SLURM_ARRAY_TASK_ID'))
 # usePath <- paste0(args[1])
 # output_dir <- paste0(args[2])
 
+#this will get used later, but I need some input on what role this serves (beyond naming folders)
+Sample_Name = 'DOM_Syn_Trans'
 
 #######################
 ### Loading in data ###
