@@ -21,7 +21,7 @@ Here's the steps that worked for me (after logging into Poseidon):\
 ```conda install r-gtools```\
 ```conda env export > tformsKL1.yml``` 
 
-At this point you have your configuration file (the yml file), edit it locally to change the environment to be tformsKL1 --> do this by setting the first row to ```name: tformsKL1``` and at the very end of the file, edit this ```prefix: /vortexfs1/home/klongnecker/.conda/envs/tforms1KL4```. Then, go into the various slurm scripts which follow and change them all to read ```conda activate tformsKL1```
+At this point you have your configuration file (the yml file), edit it *locally* to change the environment to be tformsKL1 --> do this by setting the first row to ```name: tformsKL1``` and at the very end of the file, edit this ```prefix: /vortexfs1/home/klongnecker/.conda/envs/tforms1KL4```. Then, go into the various slurm scripts which follow and change them all to read ```conda activate tformsKL1```. After the local editing, put the new yml file on the HPC.
 
 Install the conda environment via the yml file:\
 ```conda env create --file tformsKL1.yml```
