@@ -123,12 +123,7 @@ if (nrow(Sample_Peak_Mat >= 2) & nrow(Sample_Peak_Mat) < 5000) {
   date()
   
   # Finding transformations which match observed mass differences (within error)
-  # KL note: pbsapply shows Progress Bar...want to shut that off for the HPC]
-  # test sample will take about two minutes
-  #op <- pboptions(type = "timer") # default
-  #system.time(mass.diff <- pbsapply(X = trans.full$Mass, function(x) which(Distance_Results$Dist.plus >= x & Distance_Results$Dist.minus <= x), USE.NAMES = T))
-  #pboptions(op)
-  #can just use sapply, easier than trying to install pbapply on the HPC
+  #KL note: use sapply, easier than trying to install pbapply on the HPC
   mass.diff <- sapply(X = trans.full$Mass, function(x) which(Distance_Results$Dist.plus >= x & Distance_Results$Dist.minus <= x), USE.NAMES = T)
   
   
@@ -145,11 +140,11 @@ if (nrow(Sample_Peak_Mat >= 2) & nrow(Sample_Peak_Mat) < 5000) {
   head(Distance_Results)
   
   #Turn this off for the moment
-  # # Creating directory if it doesn't exist, prior to writing the output file
-  # if(length(grep(Sample_Name,list.dirs("Transformation Peak Comparisons", recursive = F))) == 0){
-  #   dir.create(paste(output_dir,"/Transformation Peak Comparisons/", Sample_Name, sep=""))
-  #   print("Directory created")
-  # }
+  # Creating directory if it doesn't exist, prior to writing the output file
+  if(length(grep(Sample_Name,list.dirs("Transformation Peak Comparisons", recursive = F))) == 0){
+    dir.create(paste(output_dir,"/Transformation Peak Comparisons/", Sample_Name, sep=""))
+    print("Directory created")
+  }
   
   #write.csv(Distance_Results,paste(output_dir,"/Transformation Peak Comparisons/",Sample_Name,"/Peak.2.Peak_",dist.unique,".csv",sep=""),quote = F,row.names = F)
   write.csv(Distance_Results,paste("/Transformation Peak Comparisons/",Sample_Name,"/Peak.2.Peak_",dist.unique,".csv",sep=""),quote = F,row.names = F)
