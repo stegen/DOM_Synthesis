@@ -9,10 +9,19 @@ paste("This is task", Sys.getenv('SLURM_ARRAY_TASK_ID'))
 # in_dir="C:/Users/klongnecker/Documents/Dropbox/XX_DOMsynthesis_GreeceMtg/_data_from_2"
 # usePath <- paste0(in_dir)
 # ionMode <- "pos"
+# 
+# #this is the version for the HPC and the slurm script
+# usePath <- paste0(args[1])
+# output_dir <- paste0(args[2])
 
-#this is the version for the HPC and the slurm script
-usePath <- paste0(args[1])
-output_dir <- paste0(args[2])
+
+#######################
+### Loading in data ###
+#######################
+#HPC
+dataPath <- "/proj/omics/kujawinski/data/DOMsynthesis/"
+#laptop
+#dataPath <- "C:/Users/klongnecker/Documents/Dropbox/XX_DOMsynthesis_GreeceMtg/_data_from_2"
 
 # Loading in ICR data (data are in dataPath)
 data = read.csv(list.files(path = dataPath,pattern = "DOM_Synthesis_Data_Trim.csv",full.names=TRUE), row.names = 1) # Keeping data and mol-data seperate to ensure they are unaltered
