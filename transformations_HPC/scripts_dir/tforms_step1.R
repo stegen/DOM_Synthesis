@@ -73,7 +73,7 @@ tot.trans = numeric()
 counter = 0
 
 #as received
-for (current.sample in samples.to.process) {
+#for (current.sample in samples.to.process) {
 
 #from James (testing), this sample will work: Behnke2022_2020February20NegESI_Fen_OiL_0724_i.corems
 #idx <- 2
@@ -81,9 +81,9 @@ for (current.sample in samples.to.process) {
 #KL changed syntax a little because my brain operates this way
 #for (idx in 1:length(samples.to.process)) {
 #for (idx in 2:2) {
-#for (idx in 1:5) {
+for (idx in 1:5) {
   
-  #current.sample <- samples.to.process[idx] #KL added for testing one sample
+  current.sample <- samples.to.process[idx] #KL added for testing one sample
 
   counter = counter + 1
   
