@@ -4,6 +4,7 @@
 #KL 25 October 2023
 library(dplyr)
 library(tidyr)
+args = commandArgs(trailingOnly=TRUE)
 
 #HPC - the slurm script version
 in_dir <- paste0(args[1])
