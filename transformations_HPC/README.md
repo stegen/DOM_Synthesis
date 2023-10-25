@@ -44,3 +44,9 @@ This will let you open up an R window for testing on Poseidon (useful for testin
 
 
 
+#Misc notes here for now:
+```/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/scripts_dir```
+
+
+
+
