@@ -22,9 +22,9 @@ Sample_Name = 'DOM_Syn_Trans'
 ### Loading in data ###
 #######################
 #HPC
-#dataPath <- "/proj/omics/kujawinski/data/DOMsynthesis/"
+dataPath <- "/proj/omics/kujawinski/data/DOMsynthesis/"
 #laptop
-dataPath <- "C:/Users/klongnecker/Documents/Dropbox/XX_DOMsynthesis_GreeceMtg/_data_from_2"
+#dataPath <- "C:/Users/klongnecker/Documents/Dropbox/XX_DOMsynthesis_GreeceMtg/_data_from_2"
 
 # Loading in ICR data (data are in dataPath)
 data = read.csv(list.files(path = dataPath,pattern = "DOM_Synthesis_Data_Trim.csv",full.names=TRUE), row.names = 1) # Keeping data and mol-data seperate to ensure they are unaltered
