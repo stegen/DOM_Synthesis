@@ -1,0 +1,41 @@
+#!/bin/bash
+#SBATCH --partition=compute
+#SBATCH --job-name=step1-tforms
+#SBATCH --mail-type=FAIL,END
+#SBATCH --mail-user=klongnecker@whoi.edu
+#SBATCH --ntasks-per-node=1
+#SBATCH --mem=4gb
+#SBATCH --time=6:00:00
+#SBATCH --output=/vortexfs1/home/klongnecker/DOM_Synthesis/logfiles_dir/step1-tforms.out
+#SBATCH --error=/vortexfs1/home/klongnecker/DOM_Synthesis/logfiles_dir/step1-tforms.error
+#SBATCH --array=1-68%40 
+
+#this is the numbers for 502 files do 1 to 502 files in batches of 40. If I use this, update to match what I have
+###SBATCH --array=1-502%40 
+
+
+dir="$HOME/DOM_Synthesis"
+cd "$dir"
+
+in_dir="/vortexfs1/omics/kujawinski/data/DOMsynthesis"
+out_dir="$dir/output_dir/$SLURM_JOB_NAME"
+log_dir="$dir/logfiles_dir/$SLURM_JOB_NAME" #need a folder to hold the output results text files - there are zillions of them. 
+
+if [ ! -d "$out_dir" ]; then
+    mkdir -p "$out_dir"
+fi
+if [ ! -d "$log_dir" ]; then
+    mkdir -p "$log_dir"
+fi
+
+echo `date`
+echo This is job $SLURM_JOB_ID
+echo This is task $SLURM_ARRAY_TASK_ID
+
+CONDA_BASE=$(conda info --base)
+source $CONDA_BASE/etc/profile.d/conda.sh
+conda activate untargKL4
+
+Rscript --no-save --no-restore --verbose $dir/scripts_dir/xcms1.R "$in_dir" "$SLURM_ARRAY_TASK_ID" "$out_dir" > "$log_dir/${SLURM_JOB_NAME}_${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID}.Rout" 2>&1 > "$log_dir/${SLURM_JOB_NAME}_$ionMode_${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID}.log"
+
+echo `date`
