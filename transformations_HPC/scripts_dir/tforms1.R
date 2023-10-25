@@ -1,4 +1,4 @@
-# Use this as a model for some R script to come from James to run the transformations
+# Set up R script from James Stegen (PNNL) R script on transformations for an HPC
 #KL 25 October 2023
 args = commandArgs(trailingOnly=TRUE)
 library(dplyr)
@@ -212,12 +212,13 @@ print(counter)
 
 # format the total transformations matrix and write it out
 tot.trans = as.data.frame(tot.trans)
+#In the final file, have the following:
 colnames(tot.trans) = c('sample','total.transformations','num.of.formulas','normalized.trans')
 tot.trans$sample = as.character(tot.trans$sample)
 tot.trans$total.transformations = as.numeric(as.character(tot.trans$total.transformations))
 str(tot.trans)
 
-# #KL where does trans.temp come from? only have prior...think about this later
+# #KL trans.temp is the prior data file, new data appended 
 # tot.trans.merged = rbind(tot.trans,trans.temp)
 # write.csv(tot.trans.merged,paste(Sample_Name,"_Total_Transformations.csv", sep=""),quote = F,row.names = F)
 write.csv(tot.trans,paste(Sample_Name,"_Total_Transformations.csv", sep=""),quote = F,row.names = F)
