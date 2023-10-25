@@ -242,7 +242,7 @@ get_lambda <- function(formula_matrix) {
 # user parameters ------------------------------------------------------
 
 outfile <- "DOM_Synthesis_Lambda.csv"
-fticr_data <-  read_csv("Merged_Processed_Mol - 10-19-23.csv")
+fticr_data <-  read.csv("DOM_Synthesis_Mol_Trim.csv")
 
 
 
@@ -268,5 +268,7 @@ for (i in 1:length(stoich_types)) {
 }
 colnames(df) <- names
 df['MolForm'] <- info$formulas
+
+df = df[,c("MolForm","delGcox0","delGd0","delGcat0","delGan0","delGdis0","lambda0","delGcox","delGd","delGcat","delGan","delGdis","lambda")]
 
 write.csv(df, file = outfile, row.names=FALSE)

@@ -13,7 +13,7 @@ Sample_Name = 'DOM_Syn_Trans'
 #######################
 
 # if running in pieces, reload the previous output
-reload.trans.temp = F
+reload.trans.temp = T
 if (reload.trans.temp == T) {
   
   trans.temp = read.csv("DOM_Syn_Trans_Total_Transformations_Temp.csv")
@@ -28,6 +28,10 @@ reload.files = T
 if (reload.files == T) {
   
   data = read.csv(list.files(pattern = "_Data_Trim"), row.names = 1) # Keeping data and mol-data seperate to ensure they are unaltered
+  formula.per.sample = colSums(data)
+  samples.to.drop = names(formula.per.sample)[which(formula.per.sample == 0)]
+  data = data[,-which(colnames(data) %in% samples.to.drop)]
+  
   mol = read.csv(list.files(pattern = "_Mol_Trim"), row.names = 1)
 
   data[1:5,1:5]
@@ -74,7 +78,8 @@ if(!dir.exists("Transformations per Peak")){
 ###########################################
 
 # pull out just the sample names
-samples.to.process = colnames(data)
+sample.to.restart = 'SO245_masslistsSO245.SPE002_028_01_1367.corems'
+samples.to.process = colnames(data)[which(colnames(data) == sample.to.restart):ncol(data)]
 
 # error term
 error.term = 0.000010
@@ -142,16 +147,20 @@ for (current.sample in samples.to.process) {
     # write.csv(Distance_Results,paste("Transformation Peak Comparisons/", "Peak.2.Peak_",dist.unique,".csv",sep=""),quote = F,row.names = F)
   
     # sum up the number of transformations and update the matrix
-    tot.trans = rbind(tot.trans,c(dist.unique,nrow(Distance_Results),nrow(Sample_Peak_Mat),nrow(Distance_Results)/nrow(Sample_Peak_Mat)))
-  
+    #tot.trans = rbind(tot.trans,c(dist.unique,nrow(Distance_Results),nrow(Sample_Peak_Mat),nrow(Distance_Results)/nrow(Sample_Peak_Mat)))
+    tot.trans = c(dist.unique,nrow(Distance_Results),nrow(Sample_Peak_Mat),nrow(Distance_Results)/nrow(Sample_Peak_Mat))
+    
+    
     ##### write out current tot.trans in case crash
     # format the total transformations matrix and write it out
-    tot.trans.out = as.data.frame(tot.trans)
+    tot.trans.out = as.data.frame(t(as.data.frame(tot.trans)))
     colnames(tot.trans.out) = c('sample','total.transformations','num.of.formulas','normalized.trans')
     tot.trans.out$sample = as.character(tot.trans.out$sample)
     tot.trans.out$total.transformations = as.numeric(as.character(tot.trans.out$total.transformations))
-    write.csv(tot.trans.out,paste(Sample_Name,"_Total_Transformations_Temp.csv", sep=""),quote = F,row.names = F)
-  
+    #write.csv(tot.trans.out,paste(Sample_Name,"_Total_Transformations_Temp2.csv", sep=""),quote = F,row.names = F)
+    write.table(tot.trans.out,paste(Sample_Name,"_Total_Transformations_Temp.csv", sep=""),sep=",",col.names=F,quote = F,row.names = F,append = T)
+    
+    
     #####
   
     # generate transformation profile for the sample
@@ -195,15 +204,15 @@ for (current.sample in samples.to.process) {
 }
 
 # format the total transformations matrix and write it out
-tot.trans = as.data.frame(tot.trans)
-colnames(tot.trans) = c('sample','total.transformations','num.of.formulas','normalized.trans')
-tot.trans$sample = as.character(tot.trans$sample)
-tot.trans$total.transformations = as.numeric(as.character(tot.trans$total.transformations))
-str(tot.trans)
+#tot.trans = as.data.frame(tot.trans)
+#colnames(tot.trans) = c('sample','total.transformations','num.of.formulas','normalized.trans')
+#tot.trans$sample = as.character(tot.trans$sample)
+#tot.trans$total.transformations = as.numeric(as.character(tot.trans$total.transformations))
+#str(tot.trans)
 
-tot.trans.merged = rbind(tot.trans,trans.temp)
+#tot.trans.merged = rbind(tot.trans,trans.temp)
 
-write.csv(tot.trans.merged,paste(Sample_Name,"_Total_Transformations.csv", sep=""),quote = F,row.names = F)
+#write.csv(tot.trans.merged,paste(Sample_Name,"_Total_Transformations.csv", sep=""),quote = F,row.names = F)
 
 # write out the trans profiles across samples
 #write.csv(profiles.of.trans,paste(Sample_Name, "_Trans_Profiles.csv", sep=""),quote = F,row.names = F)

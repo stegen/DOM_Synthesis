@@ -1,9 +1,11 @@
 # merging Mol file and select variables from lambda script
 # specific to the DOM synthesis effort
 
-mol.in = read.csv("Merged_Processed_Mol - 10-19-23.csv")
+mol.in = read.csv("DOM_Synthesis_Mol_Trim.csv")
 lambda.in = read.csv("DOM_Synthesis_Lambda.csv")
 
-out = merge(mol.in,lambda.in,by = 'MolForm')
+out = merge(mol.in,lambda.in,by = 'MolForm',sort = F)
 
-write.csv(out,file = "Merged_Processed_Mol_Lambda - 10-19-23.csv")
+identical(mol.in$MolForm,out$MolForm)
+
+write.csv(out,file = "DOM_Synthesis_Mol_Trim_Lambda.csv")
