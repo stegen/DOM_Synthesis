@@ -10,7 +10,6 @@ paste("This is task", Sys.getenv('SLURM_ARRAY_TASK_ID'))
 # #use these rows for troubleshooting locally
 # in_dir="C:/Users/klongnecker/Documents/Dropbox/XX_DOMsynthesis_GreeceMtg/_data_from_2"
 # usePath <- paste0(in_dir)
-# ionMode <- "pos"
 # 
 # #this is the version for the HPC and the slurm script
 # usePath <- paste0(args[1])
@@ -23,9 +22,9 @@ Sample_Name = 'DOM_Syn_Trans'
 ### Loading in data ###
 #######################
 #HPC
-dataPath <- "/proj/omics/kujawinski/data/DOMsynthesis/"
+#dataPath <- "/proj/omics/kujawinski/data/DOMsynthesis/"
 #laptop
-#dataPath <- "C:/Users/klongnecker/Documents/Dropbox/XX_DOMsynthesis_GreeceMtg/_data_from_2"
+dataPath <- "C:/Users/klongnecker/Documents/Dropbox/XX_DOMsynthesis_GreeceMtg/_data_from_2"
 
 # Loading in ICR data (data are in dataPath)
 data = read.csv(list.files(path = dataPath,pattern = "DOM_Synthesis_Data_Trim.csv",full.names=TRUE), row.names = 1) # Keeping data and mol-data seperate to ensure they are unaltered
@@ -87,11 +86,16 @@ tot.trans = numeric()
 
 counter = 0
 
+#as received
+#for (current.sample in samples.to.process) {
+
 #from James (testing), this sample will work: Behnke2022_2020February20NegESI_Fen_OiL_0724_i.corems
 idx <- 2
 
-#for (current.sample in samples.to.process) {
-current.sample <- samples.to.process[idx] 
+#KL changed syntax a little because my brain operates this way
+#for (i in 1:length(samples.to.process)) {
+  
+  current.sample <- samples.to.process[idx] #KL added for testing one sample
 
 counter = counter + 1
 
@@ -204,7 +208,7 @@ if (nrow(Sample_Peak_Mat >= 2) & nrow(Sample_Peak_Mat) < 5000) {
 
 print(counter)
 
-#} end loop starting: for (current.sample in samples.to.process) { 
+} end #end of loop starting: for (current.sample in samples.to.process) { 
 
 # format the total transformations matrix and write it out
 tot.trans = as.data.frame(tot.trans)
