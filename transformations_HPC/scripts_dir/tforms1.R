@@ -57,11 +57,11 @@ if(max(data) > 1){
 
 #output_dir
 
-#KL turn this off for the moment, will use slurm to set output_dir
-# # Creating output directories
-if(!dir.exists("Transformation Peak Comparisons")){
-  dir.create("Transformation Peak Comparisons")
-}
+# #KL turn this off for the moment, will use slurm to set output_dir
+# # # Creating output directories
+# if(!dir.exists("Transformation Peak Comparisons")){
+#   dir.create("Transformation Peak Comparisons")
+# }
 # 
 # if(!dir.exists("Transformations per Peak")){
 #   dir.create("Transformations per Peak")
@@ -106,7 +106,6 @@ one.sample.matrix = cbind(as.numeric(as.character(row.names(data))), data[,which
 colnames(one.sample.matrix) = c("peak", colnames(one.sample.matrix[2]))
 # print(head(one.sample.matrix))
 
-#why is this not working on the HPC? put newer tidyr into yml file...still have issues
 Sample_Peak_Mat <- one.sample.matrix %>% gather("sample", "value", -1) %>% filter(value > 0) %>% select(sample, peak)
 
 if (nrow(Sample_Peak_Mat >= 2) & nrow(Sample_Peak_Mat) < 5000) {
@@ -124,6 +123,7 @@ if (nrow(Sample_Peak_Mat >= 2) & nrow(Sample_Peak_Mat) < 5000) {
   
   # Finding transformations which match observed mass differences (within error)
   #KL note: use sapply, easier than trying to install pbapply on the HPC
+  # FYI - this is a slow step
   mass.diff <- sapply(X = trans.full$Mass, function(x) which(Distance_Results$Dist.plus >= x & Distance_Results$Dist.minus <= x), USE.NAMES = T)
   
   
@@ -140,14 +140,14 @@ if (nrow(Sample_Peak_Mat >= 2) & nrow(Sample_Peak_Mat) < 5000) {
   head(Distance_Results)
   
   #Turn this off for the moment
-  # Creating directory if it doesn't exist, prior to writing the output file
-  if(length(grep(Sample_Name,list.dirs("Transformation Peak Comparisons", recursive = F))) == 0){
-    dir.create(paste("/Transformation Peak Comparisons/", Sample_Name, sep=""))
-    print("Directory created")
-  }
+  # # Creating directory if it doesn't exist, prior to writing the output file
+  # if(length(grep(Sample_Name,list.dirs("Transformation Peak Comparisons", recursive = F))) == 0){
+  #   dir.create(paste("/Transformation Peak Comparisons/", Sample_Name, sep=""))
+  #   print("Directory created")
+  # }
   
   #write.csv(Distance_Results,paste(output_dir,"/Transformation Peak Comparisons/",Sample_Name,"/Peak.2.Peak_",dist.unique,".csv",sep=""),quote = F,row.names = F)
-  write.csv(Distance_Results,paste("/Transformation Peak Comparisons/",Sample_Name,"/Peak.2.Peak_",dist.unique,".csv",sep=""),quote = F,row.names = F)
+  write.csv(Distance_Results,paste("Peak.2.Peak_",dist.unique,".csv",sep=""),quote = F,row.names = F)
   
   # Alternative .csv writing
   # write.csv(Distance_Results,paste("Transformation Peak Comparisons/", "Peak.2.Peak_",dist.unique,".csv",sep=""),quote = F,row.names = F)
@@ -156,14 +156,15 @@ if (nrow(Sample_Peak_Mat >= 2) & nrow(Sample_Peak_Mat) < 5000) {
   tot.trans = rbind(tot.trans,c(dist.unique,nrow(Distance_Results),nrow(Sample_Peak_Mat),nrow(Distance_Results)/nrow(Sample_Peak_Mat)))
   
   ##### write out current tot.trans in case crash
-  # format the total transformations matrix and write it out
-  tot.trans.out = as.data.frame(tot.trans)
-  colnames(tot.trans.out) = c('sample','total.transformations','num.of.formulas','normalized.trans')
-  tot.trans.out$sample = as.character(tot.trans.out$sample)
-  tot.trans.out$total.transformations = as.numeric(as.character(tot.trans.out$total.transformations))
- # write.csv(tot.trans.out,paste(output_dir,"/",Sample_Name,"_Total_Transformations_Temp.csv", sep=""),quote = F,row.names = F)
-  write.csv(tot.trans.out,paste(Sample_Name,"_Total_Transformations_Temp.csv", sep=""),quote = F,row.names = F)
-  
+  #KL turn this off for now
+ #  # format the total transformations matrix and write it out
+ #  tot.trans.out = as.data.frame(tot.trans)
+ #  colnames(tot.trans.out) = c('sample','total.transformations','num.of.formulas','normalized.trans')
+ #  tot.trans.out$sample = as.character(tot.trans.out$sample)
+ #  tot.trans.out$total.transformations = as.numeric(as.character(tot.trans.out$total.transformations))
+ # # write.csv(tot.trans.out,paste(output_dir,"/",Sample_Name,"_Total_Transformations_Temp.csv", sep=""),quote = F,row.names = F)
+ #  write.csv(tot.trans.out,paste(Sample_Name,"_Total_Transformations_Temp.csv", sep=""),quote = F,row.names = F)
+ #  
   #####
   
   #pulled text that was commented out - in tforms2.R for now
@@ -174,7 +175,7 @@ if (nrow(Sample_Peak_Mat >= 2) & nrow(Sample_Peak_Mat) < 5000) {
 
 print(counter)
 
-#} end #end of loop starting: for (current.sample in samples.to.process) { 
+#} end #close the loop starting: for (current.sample in samples.to.process) { 
 
 # format the total transformations matrix and write it out
 tot.trans = as.data.frame(tot.trans)
@@ -187,6 +188,8 @@ str(tot.trans)
 # #KL trans.temp is the prior data file, new data appended 
 # tot.trans.merged = rbind(tot.trans,trans.temp)
 # write.csv(tot.trans.merged,paste(Sample_Name,"_Total_Transformations.csv", sep=""),quote = F,row.names = F)
+
+#KL change: write the one CSV file
 write.csv(tot.trans,paste(Sample_Name,"_Total_Transformations.csv", sep=""),quote = F,row.names = F)
 
 # write out the trans profiles across samples
