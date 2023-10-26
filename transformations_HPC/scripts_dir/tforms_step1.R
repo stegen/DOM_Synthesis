@@ -132,7 +132,7 @@ for (idx in 547:length(samples.to.process)) {
     
     # sum up the number of transformations and update the matrix
     #KL turn this off. Just export the one line (see next row)
-    tot.trans = rbind(tot.trans,c(dist.unique,nrow(Distance_Results),nrow(Sample_Peak_Mat),nrow(Distance_Results)/nrow(Sample_Peak_Mat)))
+    #tot.trans = rbind(tot.trans,c(dist.unique,nrow(Distance_Results),nrow(Sample_Peak_Mat),nrow(Distance_Results)/nrow(Sample_Peak_Mat)))
     
     ##### write out current tot.trans in case crash
     #export out one line and use that to assemble the details needed from each sample later
