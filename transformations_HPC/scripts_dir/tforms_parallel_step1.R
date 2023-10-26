@@ -1,8 +1,7 @@
 # Set up R script from James Stegen (PNNL) R script on transformations for an HPC
 # Use this version to set this up as a set of parallel processes
-# step1 - just opens the files, but now I have to get rid of the hacks about 
-#passing arguments by slurm
-#KL 25 October 2023
+# step1 - open the files and set them up for the HPC
+# Krista Longnecker, Woods Hole Oceanographic Institution, 25 October 2023
 
 # Make sure path is set for HPC or laptop...depending on where this is getting run
 args = commandArgs(trailingOnly=TRUE)

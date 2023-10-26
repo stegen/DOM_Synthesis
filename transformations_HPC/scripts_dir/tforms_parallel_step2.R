@@ -1,7 +1,8 @@
 # Set up R script from James Stegen (PNNL) R script on transformations for an HPC
 # Use this version to set this up as a set of parallel processes
 # step2: now do the transformation calculations
-#KL 25 October 2023
+# Krista Longnecker, Woods Hole Oceanographic Institution, 25 October 2023
+
 library(dplyr)
 library(tidyr)
 args = commandArgs(trailingOnly=TRUE) #remember need this to use the args from the slurm script
