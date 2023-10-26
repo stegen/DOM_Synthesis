@@ -12,7 +12,9 @@ out_dir <- paste0(args[2])
 out_dir_summary <- paste0(args[3])
 
 #laptop, local trouble shooting
+# in_dir <- "C:/Users/klongnecker/Documents/Dropbox/XX_DOMsynthesis_GreeceMtg/_data_from_2"
 # out_dir = "C:/Users/klongnecker/Documents/Dropbox/XX_DOMsynthesis_GreeceMtg/testing/"
+# out_dir_summary = "C:/Users/klongnecker/Documents/Dropbox/XX_DOMsynthesis_GreeceMtg/testing2/"
 
 # Loading in ICR data (data here: in_dir)
 data = read.csv(list.files(path = in_dir,pattern = "DOM_Synthesis_Data_Trim.csv",full.names=TRUE), row.names = 1) # Keeping data and mol-data seperate to ensure they are unaltered
