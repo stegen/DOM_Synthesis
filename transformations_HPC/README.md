@@ -2,7 +2,7 @@
 DOM synthesis working group
 
 Start a README.md file to track activities as they are done.
-## 25 October 2023
+#### 25 October 2023
 Copying the trimmed data to WHOI's HPC server / poseidon. Will set up the transformations script from James to run on the HPC.
 
 ## Create the conda environment you will need
@@ -31,7 +31,28 @@ You only have to create the environment once, anytime you want it in the future,
 
 Remember that each sbatch command creates a new compute environment, so all the slurm scripts all have this statement in them: ```conda activate tformsKL1``` where tformsKL1 is the name established by the yml file above. Also remember that you have activate the module with conda before doing anything (see above in the step about accessing Poseidon, repeating here because I keep forgetting).
 
-## Misc. handy functions
+
+
+## Get started --> do the calculations (with a loop)
+This will make all the individual csv files, one for each sample. This is done in a *for* loop and is not taking full advantage of the HPC.\
+```sbatch scripts_dir/step1-tforms.slurm```\
+#### 26 October 2023
+That timed out last night, restart where it stopped off; added the export of a one line summary file that can be concatenated later. Start up a seond run for the first 500 that did not have that summary file. File 547 is the break point.
+
+```tforms-step2.R``` will do other things...have not written that code yet.
+
+
+## Get started --> do the calculations
+Now make this do the calculations in parallel - take better advantage of the HPC\
+```sbatch scripts_dir/step1-tforms_parallel.slurm```\
+```sbatch scripts_dir/step2-tforms_parallel.slurm```
+
+## Misc notes here for now:
+Working here on poseidon:\
+```/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/scripts_dir```
+
+
+## Misc. handy functions (keep at end for use during troubleshooting)
 ```conda info --envs```\
 ```conda search r-base```\
 ```squeue -u klongnecker```
@@ -41,22 +62,6 @@ This will let you open up an R window for testing on Poseidon (useful for testin
 ```conda activate tformsKL1```\
 ```R```\
 ```source("create_xset.R")``` (for example - could run the create_xset.R script)
-
-## Get started --> do the calculations
-This will make all the individual csv files, one for each sample. This is done in a *for* loop and is not taking full advantage of the HPC.
-```sbatch scripts_dir/step1-tforms1.slurm```
-
-```tforms-step2.R``` will do other things...have not written that code yet.
-
-## Get started --> do the calculations
-Now make this do the calculations in parallel - take better advantage of the HPC
-```sbatch scripts_dir/step1-tforms_parallel.slurm```
-```sbatch scripts_dir/step2-tforms_parallel.slurm```
-
-## Misc notes here for now:
-Working here on poseidon:
-```/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/scripts_dir```
-
 
 
 
