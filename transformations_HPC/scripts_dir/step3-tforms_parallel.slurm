@@ -24,5 +24,6 @@ CONDA_BASE=$(conda info --base)
 source $CONDA_BASE/etc/profile.d/conda.sh
 conda activate tformsKL1
 
-Rscript --no-save --no-restore --verbose $dir/scripts_dir/tforms_parallel_step3.R "$out_dir_summary" "$dir"> "$log_dir/${SLURM_JOB_NAME}.Rout" 2>&1 > "$log_dir/${SLURM_JOB_NAME}.log"
+#Rscript --no-save --no-restore --verbose $dir/scripts_dir/tforms_parallel_step3.R "$out_dir_summary" "$dir"> "$log_dir/${SLURM_JOB_NAME}.Rout" 2>&1 > "$log_dir/${SLURM_JOB_NAME}.log"
+Rscript --no-save --no-restore --verbose $dir/scripts_dir/tforms_parallel_step3.R > "$log_dir/${SLURM_JOB_NAME}.Rout" 2>&1 > "$log_dir/${SLURM_JOB_NAME}.log"
 echo `date`
