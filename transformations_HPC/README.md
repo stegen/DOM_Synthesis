@@ -56,7 +56,8 @@ Working here on poseidon:\
 ## Misc. handy functions (keep at end for use during troubleshooting)
 ```conda info --envs```\
 ```conda search r-base```\
-```squeue -u klongnecker```
+```squeue -u klongnecker```\
+```ls -1 | wc -l``` (count # of files in a folder)
 
 This will let you open up an R window for testing on Poseidon (useful for testing):\
 ```srun -p compute --time=01:00:00 --ntasks-per-node=1 --mem=10gb --pty bash```\
