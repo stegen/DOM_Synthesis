@@ -19,10 +19,10 @@ paste("This is task", Sys.getenv('SLURM_ARRAY_TASK_ID'))
 ### Where are the files? ###
 ############################
 #HPC - the hard coded version (lazy)
-#out_dir <- "/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/output_dir_parallel/"
+out_dir <- "/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/output_dir_P/"
 
 # #HPC - the slurm script version
-out_dir <- paste0(args[1])
+#out_dir <- paste0(args[1])
 
 #laptop, local trouble shooting
 #out_dir = "C:/Users/klongnecker/Documents/Dropbox/XX_DOMsynthesis_GreeceMtg/testing/"
