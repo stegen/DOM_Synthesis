@@ -8,7 +8,7 @@ args = commandArgs(trailingOnly=TRUE) #remember need this to use the args from t
 
 #HPC - the slurm script version
 in_dir <- paste0(args[1])
-out_dir_summary <- paste0(args[2])
+out_dir <- paste0(args[2])
 
 #laptop, local trouble shooting
 # out_dir_summary = "C:/Users/klongnecker/Documents/Dropbox/XX_DOMsynthesis_GreeceMtg/testing/"
