@@ -37,7 +37,7 @@ Remember that each sbatch command creates a new compute environment, so all the 
 This will make all the individual csv files, one for each sample. This is done in a *for* loop and is not taking full advantage of the HPC.\
 ```sbatch scripts_dir/step1-tforms.slurm```\
 #### 26 October 2023
-That timed out last night, restart where it stopped off; added the export of a one line summary file that can be concatenated later. Start up a seond run for the first 500 that did not have that summary file. File 547 is the break point.
+That timed out last night, restart where it stopped off; added the export of a one line summary file that can be concatenated later. Start up a seond run for the first 500 that did not have that summary file. File 547 is the break point. (later) timed out again...abandon this path because the parallelize verison is working
 
 ```tforms-step2.R``` will do other things...have not written that code yet.
 
@@ -58,6 +58,11 @@ Working here on poseidon:\
 ```conda search r-base```\
 ```squeue -u klongnecker```\
 ```ls -1 | wc -l``` (count # of files in a folder)
+```sacct --name=step3P```
+
+How to find one file in a list:\
+```fi <-"ManyFiles_MGC1903260_FTMS_Lakes_FJ_Sweden_43_112_01_22816.corems"```\
+```which(samples.to.process==fi,arr.ind=TRUE)```
 
 This will let you open up an R window for testing on Poseidon (useful for testing):\
 ```srun -p compute --time=01:00:00 --ntasks-per-node=1 --mem=10gb --pty bash```\
