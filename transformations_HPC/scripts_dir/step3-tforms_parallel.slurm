@@ -12,9 +12,7 @@
 dir="$HOME/DOM_Synthesis/transformations_HPC"
 cd "$dir"
 
-out_dir_summary="$dir/output_dir_summary_P/"
 log_dir="$dir/logfiles_dir_P" #need a folder to hold the output results text files - there are zillions of them. 
-
 
 echo `date`
 echo This is job $SLURM_JOB_ID
@@ -25,5 +23,6 @@ source $CONDA_BASE/etc/profile.d/conda.sh
 conda activate tformsKL1
 
 #Rscript --no-save --no-restore --verbose $dir/scripts_dir/tforms_parallel_step3.R "$out_dir_summary" "$dir"> "$log_dir/${SLURM_JOB_NAME}.Rout" 2>&1 > "$log_dir/${SLURM_JOB_NAME}.log"
+#cheat - hard code in the folder names and not pass them as variables
 Rscript --no-save --no-restore --verbose $dir/scripts_dir/tforms_parallel_step3.R > "$log_dir/${SLURM_JOB_NAME}.Rout" 2>&1 > "$log_dir/${SLURM_JOB_NAME}.log"
 echo `date`

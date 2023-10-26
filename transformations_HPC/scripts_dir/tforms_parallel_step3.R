@@ -19,7 +19,7 @@ paste("This is task", Sys.getenv('SLURM_ARRAY_TASK_ID'))
 ### Where are the files? ###
 ############################
 #HPC - the hard coded version (lazy)
-out_dir <- "/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/output_dir_P/"
+out_dir_summary <- "/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/output_dir_summary_P/"
 baseDir <- "/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/"
   
 # # #HPC - the slurm script version
