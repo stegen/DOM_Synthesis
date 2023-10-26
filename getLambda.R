@@ -1,7 +1,7 @@
 # Compute the lambda for chemical compositions
 # By Hyun-Seob Song and Joon Yong
 
-rm(list=ls());graphics.off()
+#rm(list=ls());graphics.off()
 
 "
 Compute the lambda from chemical compositions
@@ -241,7 +241,7 @@ get_lambda <- function(formula_matrix) {
 
 # user parameters ------------------------------------------------------
 
-outfile <- "DOM_Synthesis_Lambda.csv"
+outfile <- "DOM_Synthesis_Mol_Trim_Lambda.csv"
 fticr_data <-  read.csv("DOM_Synthesis_Mol_Trim.csv")
 
 
@@ -271,4 +271,12 @@ df['MolForm'] <- info$formulas
 
 df = df[,c("MolForm","delGcox0","delGd0","delGcat0","delGan0","delGdis0","lambda0","delGcox","delGd","delGcat","delGan","delGdis","lambda")]
 
-write.csv(df, file = outfile, row.names=FALSE)
+# merge lambda with mol file
+out = merge(fticr_data,df,by = 'MolForm',sort = F)
+rownames(out) = out$X
+out = out[,-which(colnames(out) == 'X')]
+out[1:5,1:5]
+
+identical(fticr_data$MolForm,out$MolForm)
+
+write.csv(out, file = outfile, row.names=T)
