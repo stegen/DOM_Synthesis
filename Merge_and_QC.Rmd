@@ -29,23 +29,28 @@ drive_auth() # use the same Google Account used to access the Google Drive Folde
 # Read Input Files from Google Drive
 
 Please update the links, if a different file shall be used!
+Deactivate downloads, in case the files are re-generated on the fly in this script
 ```{r download csv files into working directory}
 
-# original data
+# original data file
 drive_download(as_id("https://drive.google.com/file/d/1BglQCdkUHMyP0vCLWvVzUSJ2K5m-LCaV/view?usp=drive_link"), overwrite = T) # Merged_Processed_Data - 10-19-23.csv
+# original data file with modified name modifications and averaging (ECF)
+drive_download(as_id(""), overwrite = T) # Merged_Processed_Data - 10-19-23_ECF_ManyFilesFinal.csv
+# original mol file
 drive_download(as_id("https://drive.google.com/file/d/1MtbAViGO9Cw8B9p0mx6gcjda-DgXJYr9/view?usp=drive_link"), overwrite = T) # Merged_Processed_Mol - 10-19-23.csv
 
-# trimmed data
-drive_download(as_id("https://drive.google.com/file/d/1AaJYEK0IM5TiZL2YeCmKOIdCaIPipEYi/view?usp=drive_link"), overwrite = T) # DOM_Synthesis_Data_Trim.csv
-drive_download(as_id("https://drive.google.com/file/d/135aP9tmAcXS33nE9atYztIXZ1U3DknvE/view?usp=drive_link"), overwrite = T) # DOM_Synthesis_Mol_Trim.csv
-drive_download(as_id("https://drive.google.com/file/d/1Gb-Z2IwHD127XVDHuXiYZZgmky2nBR3C/view?usp=drive_link"), overwrite = T) # DOM_Synthesis_Mol_Trim_Lambda.csv
+# trimmed data not used as trimming is implemented below
+# drive_download(as_id("https://drive.google.com/file/d/1AaJYEK0IM5TiZL2YeCmKOIdCaIPipEYi/view?usp=drive_link"), overwrite = T) # DOM_Synthesis_Data_Trim.csv
+# drive_download(as_id("https://drive.google.com/file/d/135aP9tmAcXS33nE9atYztIXZ1U3DknvE/view?usp=drive_link"), overwrite = T) # DOM_Synthesis_Mol_Trim.csv
+# drive_download(as_id("https://drive.google.com/file/d/1Gb-Z2IwHD127XVDHuXiYZZgmky2nBR3C/view?usp=drive_link"), overwrite = T) # DOM_Synthesis_Mol_Trim_Lambda.csv
+
 
 # aggregated data
 drive_download(as_id("https://drive.google.com/file/d/1KSM47o6vfB4c1sjG0kLkoVMc3GhLZxHT/view?usp=drive_link"), overwrite = T) # Summary_Andrew_crosstab_wihout_iso_na.csv
 drive_download(as_id("https://drive.google.com/file/d/1fVbjuFVfQTnYgkaBstWlwWzs1MKT-4Rm/view?usp=drive_link"), overwrite = T) # Summary_Andrew_crosstab_wihout_iso_wa.csv
 
-# metadata
-drive_download(as_id("https://docs.google.com/spreadsheets/d/10PUYmIsTrmFiBefTAeog6ovh_aHaxGcn/edit?usp=drive_link"), overwrite = T) # AH_metadata_merge.xlsx
+# metadata file
+drive_download(as_id("https://drive.google.com/file/d/1h7GHrt_RQA-OKpIzHhAlbXfIEnVZ3Aor/view?usp=drive_link"), overwrite = T) # AH_metadata_merge.csv
 
 
 
@@ -55,11 +60,12 @@ drive_download(as_id("https://docs.google.com/spreadsheets/d/10PUYmIsTrmFiBefTAe
 
 # Read original data
 Using Bobs code
-```{r read untrimed data, cache=T}
+```{r read original data, cache=T}
 
-# data = read.csv("Merged_Processed_Data - 10-19-23.csv", check.names = F, row.names = 1)
-data = data.frame(fread("Merged_Processed_Data - 10-19-23.csv", check.names = F), row.names = 1)
-# mol = read.csv("Merged_Processed_Mol - 10-19-23.csv", check.names = F, row.names = 1)
+# data = read.csv("Merged_Processed_Data - 10-19-23.csv", check.names = F, row.names = 1) # use this if you have time to wait for the loading
+# data = data.frame(fread("Merged_Processed_Data - 10-19-23.csv", check.names = F), row.names = 1) # original data
+data = data.frame(fread("Merged_Processed_Data - 10-19-23_ECF_ManyFilesFinal_Index.csv", check.names = F), row.names = 1) # ECF modified data
+# mol = read.csv("Merged_Processed_Mol - 10-19-23.csv", check.names = F, row.names = 1) # use this if you have time to wait for the loading
 mol = data.frame(fread("Merged_Processed_Mol - 10-19-23.csv", check.names = F), row.names = 1)
 
 # Breaking apart by dataset
@@ -69,8 +75,7 @@ factors = data.frame(Sample = colnames(data),
 ```
 
 
-
-```{r prepare data for metric distribution, cache=T}
+```{r prepare original data for metric distribution, cache=T}
 # Create empty object
 dataset.data = data.frame(matrix(nrow = nrow(data), ncol = length(unique(factors$Dataset)),
                                  dimnames = list(row.names(data),
@@ -111,11 +116,12 @@ for(i in 1:ncol(dataset.data)){
   # add in to dataset.mol
   dataset.mol = rbind(dataset.mol, temp)
   
+  rm(temp)
 }
 ```
 
-
-```{r plotting metric distribution, message=FALSE, warning=FALSE}
+## Metric distribution for original data
+```{r plotting metric distribution of original data, message=FALSE, warning=FALSE}
 
 # plotting metric distribution
 dataset.mol %>% select(Dataset, AI_Mod, DBE_1, NOSC, OtoC_ratio, HtoC_ratio) %>%
@@ -128,10 +134,11 @@ dataset.mol %>% select(Dataset, AI_Mod, DBE_1, NOSC, OtoC_ratio, HtoC_ratio) %>%
 
 
 ```
+
 # Trim data
 
-Using James's script; only run, in case smth has to be changed
-```{r prepare trimed data, eval=FALSE, include=FALSE}
+Using James's script; set chunk option to: eval = false, include = false, if a different trimmed file is used below  
+```{r prepare trimed data from original data}
 
 # QC data matrix
 
@@ -200,33 +207,44 @@ identical(x = row.names(data.trim), y = row.names(mol.trim))
 
 # write out files
 # fwrite(x = mol.trim, file = "DOM_Synthesis_Mol_Trim.csv")
-# fwrite(x = data.trim, file = "DOM_Synthesis_Data_Trim.csv")
+fwrite(x = data.trim, file = "DOM_Synthesis_Data_Trim.csv")
 
 rm(formula.drop.matrix)
-rm(data, mol,dataset.data, dataset.mol)
+rm(dataset.data, dataset.mol)
 rm(bad.mass.formulas, DBE.C.formulas, DBE.O.formulas, filters.per.formula, formula.occurence, formula.to.drop, HC.formulas, OC.formulas, p.formulas, singletons, w)
+
+# uncomment this in case you want to keep the original data tables
+rm(data, mol)
+
+# save trimed files
+fwrite(x = data.trim, file = "DOM_Synthesis_Data_Trim.csv", row.names = T)
+fwrite(x = mol.trim, file = "DOM_Synthesis_Mol_Trim.csv", row.names = T)
+
 
 ```
 
 
-# Read final, trimmed data
-using James code
+# Read trimmed data
 
-```{r read trimed data, cache=T}
+```{r read previously trimed data, cache=T}
 
-# data = read.csv("Merged_Processed_Data - 10-19-23.csv", check.names = F, row.names = 1)
-data.trim = data.frame(fread("DOM_Synthesis_Data_Trim.csv", check.names = F), row.names = 1)
-# mol = read.csv("Merged_Processed_Mol - 10-19-23.csv", check.names = F, row.names = 1)
-mol.trim = data.frame(fread("DOM_Synthesis_Mol_Trim.csv", check.names = F), row.names = 1)
+# data.trim = read.csv("Merged_Processed_Data - 10-19-23.csv", check.names = F, row.names = 1) # use this if you have time to wait for the loading
+# data.trim = data.frame(fread("DOM_Synthesis_Data_Trim.csv", check.names = F), row.names = 1)
 
-# Breaking apart by dataset
-factors.trim = data.frame(Sample = colnames(data.trim),
-                     Dataset = str_extract(colnames(data.trim), "[^_]+"))
+# mol.trim = read.csv("Merged_Processed_Mol - 10-19-23.csv", check.names = F, row.names = 1) # use this if you have time to wait for the loading
+# mol.trim = data.frame(fread("DOM_Synthesis_Mol_Trim.csv", check.names = F), row.names = 1)
+
+
 
 ```
 
 
 ```{r prepare trimed data for metric distribution, cache=T}
+
+# Breaking apart by dataset
+factors.trim = data.frame(Sample = colnames(data.trim),
+                     Dataset = str_extract(colnames(data.trim), "[^_]+"))
+
 # Create empty object
 dataset.data.trim = data.frame(matrix(nrow = nrow(data.trim), ncol = length(unique(factors.trim$Dataset)),
                                  dimnames = list(row.names(data.trim),
@@ -270,6 +288,7 @@ for(i in 1:ncol(dataset.data.trim)){
 }
 ```
 
+## Metric distribution for trimmed data
 ```{r plotting metric distribution, message=FALSE, warning=FALSE}
 
 # plotting metric distribution
@@ -285,11 +304,87 @@ dataset.mol.trim %>% select(Dataset, AI_Mod, DBE_1, NOSC, OtoC_ratio, HtoC_ratio
 ```
 
 
+## Calculate addtl Mol Parameters "Lambda"
+```{r load functions}
+
+source("Lambda_Functions.R")
+
+```
+
+```{r run lambda calculations}
+
+# Compute the lambda for chemical compositions on trimmed Mol file
+# user parameters ------------------------------------------------------
+
+# infile <-  read.csv("DOM_Synthesis_Mol_Trim.csv") # using
+# temp <- infile
+# outfile <- "DOM_Synthesis_Mol_Trim_Lambda.csv"
+
+temp <- mol.trim
+mol.rownames <- rownames(temp)
+#temp <- as.data.table(temp)
+
+
+CHEMICAL_ELEMENTS = c("C","H","N","O","P","S")
+outfile <- "DOM_Synthesis_Mol_Trim_Lambda.csv"
+
+# main run -------------------------------------------------------------
+
+
+info <- get_compositions(temp)
+out <- get_lambda(info$chemical_compositions)
+
+# build data frame
+df <- as.data.frame(out)
+
+# build col names
+names <- rep("", 62)
+
+names[1:12] <- c("delGcox0","delGd0","delGcat0","delGan0","delGdis0","lambda0",
+                 "delGcox","delGd","delGcat","delGan","delGdis","lambda")
+
+stoich_colnames <- c("donor","h2o","hco3","nh4","hpo4","hs","h","e","acceptor","biom")
+stoich_types <- c("stoichD","stoichA","stoichCat","stoichAn","stoichMet")
+
+for (i in 1:length(stoich_types)) {
+  names[((i-1)*10+13):(i*10+12)] <- array(sapply(stoich_types[i], paste, stoich_colnames, sep="_"))
+}
+colnames(df) <- names
+df['MolForm'] <- mol.trim[, "Molecular.Formula"] #info$formulas
+
+df = df[,c("MolForm","delGcox0","delGd0","delGcat0","delGan0","delGdis0","lambda0","delGcox","delGd","delGcat","delGan","delGdis","lambda")]
+
+# merge lambda with mol file
+# rename column MolForm to Molecular.Formula 
+names(df)[which(names(df) == "MolForm")] <- "Molecular.Formula"
+
+temp = merge(temp, df, by = 'Molecular.Formula', sort = F)
+rownames(temp) = mol.rownames
+
+mol.trim <- temp
+
+# save file
+fwrite(temp, file = outfile, row.names=T)
+
+# clean up
+rm(info, out, temp, df)
+
+```
+
+## TODO: Calculate further molecular formula parameters
+
+```{r Calculate further molecular formula parameters}
+
+# Placeholder
+
+
+```
+
 
 # Merge Data and Mol Tables
 ```{r merge data and mol}
 
-
+# working with the trimed data here for now:
 # quick check
 sum(is.na(data.trim))
 
@@ -316,19 +411,27 @@ tmp4[, Dataset := str_extract(Sample, "[^_]+")]
 tmp4[is.infinite(Intensity), .N]
 
 # merged data table
-data.mol.trim <- copy(tmp4)
+data.mol.trim_long <- copy(tmp4)
 
+# save to wide form
+data.mol.trim_wide <- copy(tmp3) 
+
+# clean up
+rm(tmp, tmp2, tmp3, tmp4)
 
 ```
 
-Note that some samples had missing MF at this stage of data processing and were removed from the data
+Note that some samples had missing MF at this stage of data processing and were removed from the data.
+TODO: Check this!
 
-# MF Distribution
+# Global Aggregates and QC
+## MF Distribution and Exclusion Threshold
+The threshold for excluding samples based on low MF is set here based on the overall distribution of the data
 ```{r}
 
-ggplot(data.mol.trim[, .N, by = c("Dataset", "Sample")], aes(x = Dataset, y = N, fill = Dataset)) + geom_violin() + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+ggplot(data.mol.trim_long[, .N, by = c("Dataset", "Sample")], aes(x = Dataset, y = N, fill = Dataset)) + geom_violin() + theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-ggplot(data.mol.trim[, .N, by = c("Sample")], aes(y = N, x = "All Data")) + geom_violin(trim = T) + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+ggplot(data.mol.trim_long[, .N, by = c("Sample")], aes(y = N, x = "All Data")) + geom_violin(trim = T) + theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 Molecular_number_threshold <- 500
 
@@ -336,7 +439,7 @@ Molecular_number_threshold <- 500
 
 
 
-# Heteroatom Class Distributions
+## Heteroatom Class Distributions
 ```{r factors for sorting}
 
 fctr_lvls_cho <- c("O1",
@@ -572,7 +675,7 @@ fctr_lvls_ns <- c("N1 S1 O1",
 
 ```{r plot distribution by major element, message=FALSE, warning=FALSE}
 
-het_check <- data.mol.trim[, .N, by = c("Heteroatom.Class", "Sample", "Dataset")][, .(mean_count = mean(N)), by = c("Heteroatom.Class", "Dataset")]
+het_check <- data.mol.trim_long[, .N, by = c("Heteroatom.Class", "Sample", "Dataset")][, .(mean_count = mean(N)), by = c("Heteroatom.Class", "Dataset")]
 
 test <- copy(het_check)
 
@@ -610,12 +713,26 @@ setkeyv(test_data, cols = "Heteroatom.Class")
 
 print(heatmap(as.matrix(test_data, rownames = "Heteroatom.Class"), Rowv = NA, Colv = NA, revC = T, ylab = "Heteroatom.Class", xlab = "Dataset", scale = "none", main = het, keep.dendro = F))
 
-  }
+}
+
+
+rm(test, test_data)
 
 ```
 
-# Read Aggregated Values
-using Dings code
+
+# Adding more data and indices
+## TODO: Diversity Metrics from Andrew 
+```{r Diversity Metrics from Andrew}
+
+# Placeholder for the code used in Dings group
+
+```
+
+
+# Generate Aggregated Values
+## Read Aggregated Values
+file generated using Yuanbis code
 
 ```{r read aggregated values}
 
@@ -633,6 +750,30 @@ names(data.mol.trim.agg_na) <- sub("_wa", "_na", names(data.mol.trim.agg_na))
 
 
 ```
+
+## Calculate Aggregated Data
+```{r Calculate Aggregated Data}
+
+source("aggregated_value_calculations.R")
+
+smp <- as.character(data.mol.trim_long[, unique(Sample)])
+cols_to_use <- names(mol.trim)[-which(names(mol.trim) %in% c("Molecular.Formula", "Is.Isotopologue", "Heteroatom.Class", "m.z.Error..ppm.", "MolForm", "NtoP_ratio", "bs1_class", "bs2_class", "bs3_class"))] # removed NtoP_ration for now, since the trimmed data do not conatins this element currently.
+
+agg <- setNames(data.table(matrix(nrow = data.mol.trim_long[, uniqueN(Sample)], ncol = length(cols_to_use)+1)), c("Sample", cols_to_use))
+
+agg[, Sample := data.mol.trim_long[, unique(Sample)]]
+
+for (column in cols_to_use) {
+print(paste0("processing ", column))
+  agg[, (column) := CWM_trait(data.mol.trim_wide[, get(column)], data.mol.trim_wide[, .SD, .SDcols = smp], relative = F)]
+
+}
+
+data.mol.trim.agg_wa <- copy(agg)
+data.mol.trim.agg_wa[, Dataset := str_extract(Sample, "[^_]+")]
+
+```
+
 
 # Read Metadata
 ```{r read metadata}
@@ -653,22 +794,37 @@ metadata[, Sample := coreMSname]
 
 ```{r merge metadata with aggregated data}
 
-data.mol.trim.agg_na[, Sample := sub(".csv", "", Sample)]
+# currently only weighted averages (wa) available
+
+# data.mol.trim.agg_na[, Sample := sub(".csv", "", Sample)]
 data.mol.trim.agg_wa[, Sample := sub(".csv", "", Sample)]
 
-data.mol.trim.agg_na.meta <- merge(data.mol.trim.agg_na, metadata, by = "Sample")
+# data.mol.trim.agg_na.meta <- merge(data.mol.trim.agg_na, metadata, by = "Sample")
 data.mol.trim.agg_wa.meta <- merge(data.mol.trim.agg_wa, metadata, by = "Sample")
+
 
 ```
 
 The number of matches is lower than in the original files!
+TODO: Check this!
 
 ```{r overview}
 
-data.mol.trim.agg_na.meta[, .N, by = "type"]
-
+data.mol.trim.agg_wa.meta[, .N, by = "type"]
+data.mol.trim.agg_wa.meta[, .N, by = "Dataset"]
 
 ```
+
+# Export merged and aggregated data
+```{r Export merged and aggregated data}
+
+fwrite(data.mol.trim.agg_wa.meta, "DOM_Synthesis_Data.Agg_WA_Meta.csv")
+fwrite(data.mol.trim_wide, "DOM_Synthesis_Data.Wide.csv")
+fwrite(data.mol.trim_long, "DOM_Synthesis_Data.Long.csv")
+
+```
+
+
 
 
 # QC plots
@@ -678,18 +834,22 @@ data.mol.trim.agg_na.meta[, .N, by = "type"]
 test <- melt(data.mol.trim.agg_wa, value.name = "wa_value", id.vars = c("Dataset", "Sample"))
 
 ggplot(test, aes(x = Dataset, y = wa_value)) + geom_boxplot() + facet_wrap("variable", scales = "free") + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+rm(test)
  
 ```
 
-```{r plot na distributions per dataset, message=FALSE, warning=FALSE}
+```{r plot na distributions per dataset, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 
 test <- melt(data.mol.trim.agg_na, value.name = "wa_value", id.vars = c("Dataset", "Sample"))
 
 ggplot(test, aes(x = Dataset, y = wa_value)) + geom_boxplot() + facet_wrap("variable", scales = "free") + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+rm(test)
  
 ```
 
-```{r correlate na with wa}
+```{r correlate na with wa, eval=FALSE, include=FALSE}
 
 cols_to_use <- c("H.C", "O.C", "MZ", "AI.mod")
 
@@ -719,21 +879,4 @@ ggplot(data.mol.trim.agg_wa[Molecular_number < Molecular_number_threshold], aes(
 
 ```
 
-
-
-
-```{r}
-library(LambdaMineR)
-set_LM_plot_style()
-
-formulas.trim <- copy(data.mol.trim)
-names(formulas.trim)[which(names(formulas.trim) == "Sample")] <- "measurement_name" 
-names(formulas.trim)[which(names(formulas.trim) == "OtoC_ratio")] <- "formula_oc"
-names(formulas.trim)[which(names(formulas.trim) == "HtoC_ratio")] <- "formula_hc" 
-names(formulas.trim)[which(names(formulas.trim) == "Intensity")] <- "peak_intensity" 
-names(formulas.trim)[which(names(formulas.trim) == "Molecular.Formula")] <- "formula_string" 
-
-plot_vK(formulas.trim, "ManyFiles_Nelha_054_01_23226.corems", color_var = "peak_intensity")
-
-```
 
