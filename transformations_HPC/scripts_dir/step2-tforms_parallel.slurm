@@ -8,9 +8,9 @@
 #SBATCH --time=0:30:00
 #SBATCH --output=/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/logfiles_dir_P/step2P.out
 #SBATCH --error=/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/logfiles_dir_P/step2P.error
-#SBATCH --array=1501-2000
+#SBATCH --array=2000-2028
  
-## This is 2028 samples
+## This is 2028 samples; can only submit 587 jobs at once to poseidon, run this three times
 dir="$HOME/DOM_Synthesis/transformations_HPC"
 cd "$dir"
 
