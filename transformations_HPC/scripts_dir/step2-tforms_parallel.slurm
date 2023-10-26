@@ -4,11 +4,11 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-user=klongnecker@whoi.edu
 #SBATCH --ntasks-per-node=1
-#SBATCH --mem=4gb
-#SBATCH --time=0:05:00
+#SBATCH --mem=4000
+#SBATCH --time=0:30:00
 #SBATCH --output=/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/logfiles_dir_P/step2P.out
 #SBATCH --error=/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/logfiles_dir_P/step2P.error
-#SBATCH --array=1-500
+#SBATCH --array=1-5
  
 ## This is 2028 samples
 dir="$HOME/DOM_Synthesis/transformations_HPC"
