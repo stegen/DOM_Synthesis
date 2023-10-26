@@ -80,8 +80,8 @@ counter = 0
 
 #KL changed syntax a little because my brain operates this way
 #timed out at file 547...so that is why an odd number is there
-#for (idx in 547:length(samples.to.process)) {
-for (idx in 1:547) {
+for (idx in 741:length(samples.to.process)) {
+#for (idx in 1:547) {
 #for (idx in 1:5) {
   
   current.sample <- samples.to.process[idx] #KL added for testing one sample
