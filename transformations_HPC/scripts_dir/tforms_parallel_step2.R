@@ -13,6 +13,14 @@ out_dir_summary <- paste0(args[2])
 #laptop, local trouble shooting
 # out_dir_summary = "C:/Users/klongnecker/Documents/Dropbox/XX_DOMsynthesis_GreeceMtg/testing/"
 
+# Loading in ICR data (data here: in_dir)
+data = read.csv(list.files(path = in_dir,pattern = "DOM_Synthesis_Data_Trim.csv",full.names=TRUE), row.names = 1) # Keeping data and mol-data seperate to ensure they are unaltered
+mol = read.csv(list.files(path = in_dir,pattern = "DOM_Synthesis_Mol_Trim",full.names=TRUE), row.names = 1)
+
+# Loading in transformations
+trans.full =  read.csv(list.files(path = in_dir,pattern= "Transformation_Database_07-2020.csv",full.names=TRUE))
+trans.full$Name = as.character(trans.full$Name)
+
 # Load metadata object
 file_list <- paste0("samplesToProcess",".txt")
 files <- read.table(file = file_list,sep="\t",header=TRUE)
@@ -45,8 +53,6 @@ tot.trans = numeric()
 
   print(date())
 
-  #issue here..but out of steam
-  %%%
   one.sample.matrix = cbind(as.numeric(as.character(row.names(data))), data[,which(colnames(data) == current.sample), drop = FALSE]) # "drop = FALSE" ensures that the row and column names remain associated with the data
 
   colnames(one.sample.matrix) = c("peak", colnames(one.sample.matrix[2]))
