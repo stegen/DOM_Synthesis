@@ -63,7 +63,10 @@ tot.trans = numeric()
   
   Sample_Peak_Mat <- one.sample.matrix %>% gather("sample", "value", -1) %>% filter(value > 0) %>% select(sample, peak)
   
-  if (nrow(Sample_Peak_Mat >= 2) & nrow(Sample_Peak_Mat) < 5000) {
+  #take this out...run all samples, this was because of limits on running on a laptop
+  #if (nrow(Sample_Peak_Mat >= 2) & nrow(Sample_Peak_Mat) < 5000) {
+  #still require 2 rows bc need two to anything
+  if (nrow(Sample_Peak_Mat >= 2)) {
     
     ##
     Distance_Results <- Sample_Peak_Mat %>% left_join(Sample_Peak_Mat, by = "sample") %>% filter(peak.x > peak.y) %>% mutate(Dist = peak.x - peak.y) %>% select(sample, Dist,peak.x,peak.y)
