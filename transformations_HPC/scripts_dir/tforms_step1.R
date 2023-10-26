@@ -131,6 +131,7 @@ for (idx in 547:length(samples.to.process)) {
     # write.csv(Distance_Results,paste("Transformation Peak Comparisons/", "Peak.2.Peak_",dist.unique,".csv",sep=""),quote = F,row.names = F)
     
     # sum up the number of transformations and update the matrix
+    #KL turn this off. Just export the one line (see next row)
     tot.trans = rbind(tot.trans,c(dist.unique,nrow(Distance_Results),nrow(Sample_Peak_Mat),nrow(Distance_Results)/nrow(Sample_Peak_Mat)))
     
     ##### write out current tot.trans in case crash
