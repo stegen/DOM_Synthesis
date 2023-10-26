@@ -32,7 +32,7 @@ baseDir <- "/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/"
 ############
 # read samplesToProcess.txt - that will serve to compare that I have all the one-liners
 # where did I put that? (in scripts_dir, not the best place but fine)
-file_list <- paste0("samplesToProcess",".txt")
+file_list <- paste0(baseDir,"samplesToProcess",".txt")
 files <- read.table(file = file_list,sep="\t",header=TRUE)
 
 # get the full list of files in a directory, files are all in out_dir and begin with 'Summary'
@@ -51,8 +51,8 @@ sumList <- list.files(out_dir_summary,pattern = "Summary_")
 # }
 # 
 
-#first, make a place to put the one liners, can start with the first file
-one <- read.csv(list.files(path = out_dir,sumList[1],full.names=TRUE),header=TRUE)
+#first, get the first one-liner
+one <- read.csv(list.files(path = out_dir_summary,sumList[1],full.names=TRUE),header=TRUE)
 tot.trans = one[1,]
 
 rm(one)
@@ -60,7 +60,7 @@ rm(one)
 #start idx at 2 because used first file as base of matrix
 for (idx in 2:length(sumList)) {
   #read the file and append to running list
-  one <- read.csv(list.files(path = out_dir,sumList[idx],full.names=TRUE),header=FALSE)
+  one <- read.csv(list.files(path = out_dir_summary,sumList[idx],full.names=TRUE),header=FALSE)
   tot.trans[idx,] = one[2,]
   rm(one)
 }
