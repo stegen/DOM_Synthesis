@@ -14,7 +14,7 @@
 dir="$HOME/DOM_Synthesis/transformations_HPC"
 cd "$dir"
 
-in_dir="/vortexfs1/omics/kujawinski/data/DOMsynthesis"
+in_dir="/vortexfs1/omics/kujawinski/data/DOMsynthesis" #data are here in the omics folder
 out_dir="$dir/output_dir_P/"
 log_dir="$dir/logfiles_dir_P" #need a folder to hold the output results text files - there are zillions of them. 
 

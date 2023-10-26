@@ -8,7 +8,7 @@ args = commandArgs(trailingOnly=TRUE) #remember need this to use the args from t
 
 #HPC - the slurm script version
 in_dir <- paste0(args[1])
-out_dir_summary <- paste0(args[2])
+out_dir <- paste0(args[2])
 
 #laptop, local trouble shooting
 # out_dir_summary = "C:/Users/klongnecker/Documents/Dropbox/XX_DOMsynthesis_GreeceMtg/testing/"
@@ -104,7 +104,7 @@ tot.trans = numeric()
     colnames <- c("dist.unique","nDistance_Results","n_Sample_Peak_Mat","n_ratio")
     colnames(tot.trans) <- colnames 
     #now write that to a text file
-    write.csv(tot.trans,paste(out_dir_summary,"Summary_",dist.unique,".csv",sep=""),quote = F,row.names = F)
+    write.csv(tot.trans,paste(out_dir,"Summary_",dist.unique,".csv",sep=""),quote = F,row.names = F)
     
   }
   
