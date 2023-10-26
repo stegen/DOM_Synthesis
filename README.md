@@ -1,5 +1,5 @@
 # DOM_Synthesis
-DOM synthesis working group
+DOM synthesis working group; October 2023
 
 Quick notes in a README.md file so that we remember where files are and what we did this week. Each of the contributions came in via GitHub, and we have all the code used and developed this week.
 
