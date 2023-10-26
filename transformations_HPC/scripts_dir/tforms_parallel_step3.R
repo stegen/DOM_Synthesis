@@ -23,6 +23,7 @@ paste("This is task", Sys.getenv('SLURM_ARRAY_TASK_ID'))
 
 # #HPC - the slurm script version
 out_dir_summary <- paste0(args[1])
+baseDir <- paste0(args[2])
 
 #laptop, local trouble shooting
 #out_dir = "C:/Users/klongnecker/Documents/Dropbox/XX_DOMsynthesis_GreeceMtg/testing/"
@@ -63,6 +64,6 @@ for (idx in 2:length(sumList)) {
   rm(one)
 }
 
-#then export the result as a single CSV file
-write.csv(tot.trans,paste0("Transformations_fullSet",".csv",sep=""),quote = F,row.names = F)
+#then export the result as a single CSV file, put the answer in baseDir
+write.csv(tot.trans,paste0(baseDir,"Transformations_done_fullSet",".csv",sep=""),quote = F,row.names = F)
 #

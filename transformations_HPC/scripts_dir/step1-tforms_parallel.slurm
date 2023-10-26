@@ -16,6 +16,7 @@ in_dir="/vortexfs1/omics/kujawinski/data/DOMsynthesis"
 out_dir="$dir/output_dir_P/"
 log_dir="$dir/logfiles_dir_P" #need a folder to hold the output results text files - there are zillions of them. 
 
+#need to make the directories that will be used
 if [ ! -d "$out_dir" ]; then
     mkdir -p "$out_dir"
 fi

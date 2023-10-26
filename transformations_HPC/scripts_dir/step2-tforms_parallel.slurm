@@ -22,6 +22,7 @@ out_dir="$dir/output_dir_P/"
 out_dir_summary="$dir/output_dir_summary_P/"
 log_dir="$dir/logfiles_dir_P" #need a folder to hold the output results text files - there are zillions of them. 
 
+#need to make one more directory
 if [ ! -d "$out_dir_summary" ]; then
     mkdir -p "$out_dir_summary"
 fi
