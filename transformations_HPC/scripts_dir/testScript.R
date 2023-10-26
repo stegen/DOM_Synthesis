@@ -23,5 +23,5 @@ current.sample <- files[f,]
 
 #make a matrix and export the file...testing
 forExport <- c(in_dir,out_dir,current.sample)
-write.csv(forExport,paste("testing.csv",sep=""),quote = F,row.names = F)
+write.csv(forExport,paste0(out_dir,"testing.csv",sep=""),quote = F,row.names = F)
 
