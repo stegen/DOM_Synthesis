@@ -45,7 +45,8 @@ That timed out last night, restart where it stopped off; added the export of a o
 ## Get started --> do the calculations
 Now make this do the calculations in parallel - take better advantage of the HPC\
 ```sbatch scripts_dir/step1-tforms_parallel.slurm```\
-```sbatch scripts_dir/step2-tforms_parallel.slurm```
+```sbatch scripts_dir/step2-tforms_parallel.slurm```\
+```sbatch scripts_dir/step3-tforms_parallel.slurm```
 
 ## Misc notes here for now:
 Working here on poseidon:\
