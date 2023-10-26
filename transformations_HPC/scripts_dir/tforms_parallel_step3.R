@@ -36,31 +36,33 @@ files <- read.table(file = file_list,sep="\t",header=TRUE)
 # get the full list of files in a directory, files are all in out_dir and begin with 'Summary'
 sumList <- list.files(out_dir_summary,pattern = "Summary_")
 
-#write the list of files...and just pluck it off the HPC
-write.csv(sumList,paste0("fileListDone",".csv",sep=""),quote = F,row.names = F)
+# #write the list of files...and just pluck it off the HPC
+# write.csv(sumList,paste0("fileListDone",".csv",sep=""),quote = F,row.names = F)
 
-# 
 # ##put in an error check here - do I have the same number of files as in the original list?
+## NO - there are samples that will not be here - we set the required number of formulas to 
+## be greater than two (dropped the upper limit), but we still have 
 # nList = dim(files)[1]
 # nFound = length(sumList)
 # if(!nList == nFound){
 #   stop("Something is incorrect: the list of one-liners does not match the original list of samples")
 # }
 # 
-# #first, make a place to put the one liners, can start with the first file
-# one <- read.csv(list.files(path = out_dir,sumList[1],full.names=TRUE),header=TRUE)
-# tot.trans = one[1,]
-# 
-# rm(one)  
-# 
-# #start idx at 2 because used first file as base of matrix
-# for (idx in 2:length(sumList)) {
-#   #read the file and append to running list
-#   one <- read.csv(list.files(path = out_dir,sumList[idx],full.names=TRUE),header=FALSE)
-#   tot.trans[idx,] = one[2,]
-#   rm(one)
-# }
-# 
-# #then export the result as a single CSV file
-# write.csv(tot.trans,paste0("Transformulas_fullSet",".csv",sep=""),quote = F,row.names = F)
-# # 
+
+#first, make a place to put the one liners, can start with the first file
+one <- read.csv(list.files(path = out_dir,sumList[1],full.names=TRUE),header=TRUE)
+tot.trans = one[1,]
+
+rm(one)
+
+#start idx at 2 because used first file as base of matrix
+for (idx in 2:length(sumList)) {
+  #read the file and append to running list
+  one <- read.csv(list.files(path = out_dir,sumList[idx],full.names=TRUE),header=FALSE)
+  tot.trans[idx,] = one[2,]
+  rm(one)
+}
+
+#then export the result as a single CSV file
+write.csv(tot.trans,paste0("Transformations_fullSet",".csv",sep=""),quote = F,row.names = F)
+#
