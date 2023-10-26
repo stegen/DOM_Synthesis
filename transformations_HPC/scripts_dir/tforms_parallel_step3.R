@@ -19,10 +19,10 @@ paste("This is task", Sys.getenv('SLURM_ARRAY_TASK_ID'))
 ### Where are the files? ###
 ############################
 #HPC - the hard coded version (lazy)
-out_dir <- "/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/output_dir_P/"
+#out_dir <- "/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/output_dir_P/"
 
 # #HPC - the slurm script version
-#out_dir <- paste0(args[1])
+out_dir_summary <- paste0(args[1])
 
 #laptop, local trouble shooting
 #out_dir = "C:/Users/klongnecker/Documents/Dropbox/XX_DOMsynthesis_GreeceMtg/testing/"
@@ -34,7 +34,7 @@ file_list <- paste0("samplesToProcess",".txt")
 files <- read.table(file = file_list,sep="\t",header=TRUE)
 
 # get the full list of files in a directory, files are all in out_dir and begin with 'Summary'
-sumList <- list.files(out_dir,pattern = "Summary_")
+sumList <- list.files(out_dir_summary,pattern = "Summary_")
 
 #write the list of files...and just pluck it off the HPC
 write.csv(sumList,paste0("fileListDone",".csv",sep=""),quote = F,row.names = F)

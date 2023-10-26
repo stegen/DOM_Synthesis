@@ -9,6 +9,7 @@ args = commandArgs(trailingOnly=TRUE) #remember need this to use the args from t
 #HPC - the slurm script version
 in_dir <- paste0(args[1])
 out_dir <- paste0(args[2])
+out_dir_summary <- paste0(args[3])
 
 #laptop, local trouble shooting
 # out_dir = "C:/Users/klongnecker/Documents/Dropbox/XX_DOMsynthesis_GreeceMtg/testing/"
@@ -26,7 +27,7 @@ file_list <- paste0("samplesToProcess",".txt")
 files <- read.table(file = file_list,sep="\t",header=TRUE)
 
 # File to process based on array number
-f<- as.numeric(paste0(args[3]))
+f<- as.numeric(paste0(args[4]))
 current.sample <- files[f,]
 
 ###########################################
@@ -34,7 +35,7 @@ current.sample <- files[f,]
 ###########################################
 
 # # pull out just the sample names
-#KL note - this is now in prior step
+#KL note - this is now in the step1 R script
 # samples.to.process = colnames(data)
 
 # error term
@@ -92,9 +93,6 @@ tot.trans = numeric()
     #write.csv(Distance_Results,paste(output_dir,"/Transformation Peak Comparisons/",Sample_Name,"/Peak.2.Peak_",dist.unique,".csv",sep=""),quote = F,row.names = F)
     write.csv(Distance_Results,paste(out_dir,"Peak.2.Peak_",dist.unique,".csv",sep=""),quote = F,row.names = F)
     
-    # Alternative .csv writing
-    # write.csv(Distance_Results,paste("Transformation Peak Comparisons/", "Peak.2.Peak_",dist.unique,".csv",sep=""),quote = F,row.names = F)
-    
     # sum up the number of transformations and update the matrix
     #tot.trans = rbind(tot.trans,c(dist.unique,nrow(Distance_Results),nrow(Sample_Peak_Mat),nrow(Distance_Results)/nrow(Sample_Peak_Mat)))
     #change this - export out one line and use that to assemble the details needed from each sample later
@@ -104,9 +102,7 @@ tot.trans = numeric()
     colnames <- c("dist.unique","nDistance_Results","n_Sample_Peak_Mat","n_ratio")
     colnames(tot.trans) <- colnames 
     #now write that to a text file
-    write.csv(tot.trans,paste(out_dir,"Summary_",dist.unique,".csv",sep=""),quote = F,row.names = F)
+    write.csv(tot.trans,paste(out_dir_summary,"Summary_",dist.unique,".csv",sep=""),quote = F,row.names = F)
     
   }
   
-
-
