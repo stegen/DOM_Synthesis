@@ -13,6 +13,8 @@ dir="$HOME/DOM_Synthesis/transformations_HPC"
 cd "$dir"
 
 out_dir_summary="$dir/output_dir_summary_P/"
+log_dir="$dir/logfiles_dir_P" #need a folder to hold the output results text files - there are zillions of them. 
+
 
 echo `date`
 echo This is job $SLURM_JOB_ID
