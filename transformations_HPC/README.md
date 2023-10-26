@@ -1,14 +1,14 @@
-# DOM_Synthesis
-DOM synthesis working group
+# Calculate the chemical transformations
+DOM synthesis working group\
+Using James Stegen's code, and putting it onto WHOI's HPC to do the calculations.\
+Krista Longnecker, Woods Hole Oceanographic Institution
 
 Start a README.md file to track activities as they are done.
-#### 25 October 2023
-Copying the trimmed data to WHOI's HPC server / poseidon. Will set up the transformations script from James to run on the HPC.
+## 25 October 2023
+Use WinSCP to copy the trimmed data to WHOI's HPC server / poseidon. 
 
-## Create the conda environment you will need
-You use conda to gather all the pieces you need: R and its various packages. 
-For example, I needed R version 4.21 (or so) which required updating my YML file. 
-This is quite a process (read, hassle). To do this, you need to set up a conda environment, install all the packages in that environment, and export the yml file to use in the future. 
+#### Create the conda environment you will need
+Use conda to gather all the pieces you need: R and its various packages. To do this, you need to set up a conda environment, install all the packages in that environment, and export the yml file to use in the future. 
 Here's the steps that worked for me (after logging into Poseidon):\
 ```module load anaconda/5.1```\
 ```conda config --add channels conda-forge``` (you cannot get R>3.6 from anaconda)\
@@ -29,31 +29,19 @@ Install the conda environment via the yml file:\
 You only have to create the environment once, anytime you want it in the future, just activate it:
 ```conda activate tformsKL1```
 
-Remember that each sbatch command creates a new compute environment, so all the slurm scripts all have this statement in them: ```conda activate tformsKL1``` where tformsKL1 is the name established by the yml file above. Also remember that you have activate the module with conda before doing anything (see above in the step about accessing Poseidon, repeating here because I keep forgetting).
+Remember that each sbatch command creates a new compute environment, so all the slurm scripts all have this statement in them: ```conda activate tformsKL1``` where tformsKL1 is the name established by the yml file above. Also remember that you have activate the module with conda before doing anything (see above in the step about accessing Poseidon, repeat here as a reminder).
 
-
-
-## Get started --> do the calculations (with a loop)
-This will make all the individual csv files, one for each sample. This is done in a *for* loop and is not taking full advantage of the HPC.\
-```sbatch scripts_dir/step1-tforms.slurm```\
-#### 26 October 2023
-That timed out last night, restart where it stopped off; added the export of a one line summary file that can be concatenated later. Start up a seond run for the first 500 that did not have that summary file. File 547 is the break point. (later) timed out again...abandon this path because the parallelize verison is working
-
-```tforms-step2.R``` will do other things...have not written that code yet.
-
-
-## Get started --> do the calculations
+#### Get started --> do the calculations
 Now make this do the calculations in parallel - take better advantage of the HPC\
 ```sbatch scripts_dir/step1-tforms_parallel.slurm```\
 ```sbatch scripts_dir/step2-tforms_parallel.slurm```\
 ```sbatch scripts_dir/step3-tforms_parallel.slurm```
 
-## Misc notes here for now:
+#### Misc notes here for now:
 Working here on poseidon:\
 ```/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/scripts_dir```
 
-
-## Misc. handy functions (keep at end for use during troubleshooting)
+#### Misc. handy functions (keep at end for use during troubleshooting)
 ```conda info --envs```\
 ```conda search r-base```\
 ```squeue -u klongnecker```\
