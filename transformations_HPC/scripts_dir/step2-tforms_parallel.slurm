@@ -8,7 +8,7 @@
 #SBATCH --time=0:30:00
 #SBATCH --output=/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/logfiles_dir_P/step2P.out
 #SBATCH --error=/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/logfiles_dir_P/step2P.error
-#SBATCH --array=1001-1500
+#SBATCH --array=1501-2000
  
 ## This is 2028 samples
 dir="$HOME/DOM_Synthesis/transformations_HPC"
