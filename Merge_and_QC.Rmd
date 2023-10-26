@@ -1,0 +1,739 @@
+---
+title: "Data merging and QC script"
+author: c("Oliver J. Lechtenfeld", "James Stegen")
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(data.table)
+library(here)
+library(tidyverse)
+library(ggpubr)
+library(ggridges)
+library(googledrive)
+
+```
+
+
+```{r authenticate google}
+
+drive_auth() # use the same Google Account used to access the Google Drive Folder
+
+
+```
+
+
+# Read Input Files from Google Drive
+
+Please update the links, if a different file shall be used!
+```{r download csv files into working directory}
+
+# original data
+drive_download(as_id("https://drive.google.com/file/d/1BglQCdkUHMyP0vCLWvVzUSJ2K5m-LCaV/view?usp=drive_link"), overwrite = T) # Merged_Processed_Data - 10-19-23.csv
+drive_download(as_id("https://drive.google.com/file/d/1MtbAViGO9Cw8B9p0mx6gcjda-DgXJYr9/view?usp=drive_link"), overwrite = T) # Merged_Processed_Mol - 10-19-23.csv
+
+# trimmed data
+drive_download(as_id("https://drive.google.com/file/d/1AaJYEK0IM5TiZL2YeCmKOIdCaIPipEYi/view?usp=drive_link"), overwrite = T) # DOM_Synthesis_Data_Trim.csv
+drive_download(as_id("https://drive.google.com/file/d/135aP9tmAcXS33nE9atYztIXZ1U3DknvE/view?usp=drive_link"), overwrite = T) # DOM_Synthesis_Mol_Trim.csv
+drive_download(as_id("https://drive.google.com/file/d/1Gb-Z2IwHD127XVDHuXiYZZgmky2nBR3C/view?usp=drive_link"), overwrite = T) # DOM_Synthesis_Mol_Trim_Lambda.csv
+
+# aggregated data
+drive_download(as_id("https://drive.google.com/file/d/1KSM47o6vfB4c1sjG0kLkoVMc3GhLZxHT/view?usp=drive_link"), overwrite = T) # Summary_Andrew_crosstab_wihout_iso_na.csv
+drive_download(as_id("https://drive.google.com/file/d/1fVbjuFVfQTnYgkaBstWlwWzs1MKT-4Rm/view?usp=drive_link"), overwrite = T) # Summary_Andrew_crosstab_wihout_iso_wa.csv
+
+# metadata
+drive_download(as_id("https://docs.google.com/spreadsheets/d/10PUYmIsTrmFiBefTAeog6ovh_aHaxGcn/edit?usp=drive_link"), overwrite = T) # AH_metadata_merge.xlsx
+
+
+
+```
+
+
+
+# Read original data
+Using Bobs code
+```{r read untrimed data, cache=T}
+
+# data = read.csv("Merged_Processed_Data - 10-19-23.csv", check.names = F, row.names = 1)
+data = data.frame(fread("Merged_Processed_Data - 10-19-23.csv", check.names = F), row.names = 1)
+# mol = read.csv("Merged_Processed_Mol - 10-19-23.csv", check.names = F, row.names = 1)
+mol = data.frame(fread("Merged_Processed_Mol - 10-19-23.csv", check.names = F), row.names = 1)
+
+# Breaking apart by dataset
+factors = data.frame(Sample = colnames(data),
+                     Dataset = str_extract(colnames(data), "[^_]+"))
+
+```
+
+
+
+```{r prepare data for metric distribution, cache=T}
+# Create empty object
+dataset.data = data.frame(matrix(nrow = nrow(data), ncol = length(unique(factors$Dataset)),
+                                 dimnames = list(row.names(data),
+                                                 unique(factors$Dataset))),
+                          check.names = F)
+
+# Summarize presence/absence by dataset
+for(i in 1:ncol(dataset.data)){
+  # current dataset
+  curr.data = colnames(dataset.data)[i]
+  
+  # Select matching samples
+  temp.data = data[,which(factors$Dataset %in% curr.data)]
+  
+  # add in sums to pregenerated object
+  dataset.data[,i] = rowSums(temp.data)
+  
+  # cleanup
+  rm(temp.data, curr.data)
+}
+
+# Convert to presence/absence
+dataset.data[dataset.data > 0] = 1
+
+# Generate mol file with dataset information
+dataset.mol = NULL
+
+for(i in 1:ncol(dataset.data)){
+  # find formulas
+  w = which(dataset.data[,i] > 0)
+  
+  # find corresponding molecular information
+  temp = mol[w,]
+  
+  # add dataset information
+  temp$Dataset = colnames(dataset.data)[i]
+  
+  # add in to dataset.mol
+  dataset.mol = rbind(dataset.mol, temp)
+  
+}
+```
+
+
+```{r plotting metric distribution, message=FALSE, warning=FALSE}
+
+# plotting metric distribution
+dataset.mol %>% select(Dataset, AI_Mod, DBE_1, NOSC, OtoC_ratio, HtoC_ratio) %>%
+  gather(Variable, Value, -Dataset) %>%
+  ggplot(aes(x = Value, y = Dataset))+
+  geom_density_ridges(aes(fill = Dataset), alpha = 0.5)+
+  facet_wrap(.~Variable, scales = "free")+
+  xlab("Derived DOM Metric")+
+  theme_bw()
+
+
+```
+# Trim data
+
+Using James's script; only run, in case smth has to be changed
+```{r prepare trimed data, eval=FALSE, include=FALSE}
+
+# QC data matrix
+
+formula.drop.matrix = data.frame('singleton' = rep(NA,nrow(mol)),'P'= rep(NA,nrow(mol)), 'HtoC' = rep(NA,nrow(mol)), 'OtoC' = rep(NA,nrow(mol)), 'DBE_1' = rep(NA,nrow(mol)), 'DBE_O' = rep(NA,nrow(mol)), 'mass' = rep(NA,nrow(mol)),row.names = rownames(mol))
+
+# define singletons
+formula.occurence = rowSums(x = data)
+head(formula.occurence)
+singletons = formula.occurence[which(formula.occurence <= 1)]
+head(singletons)
+formula.drop.matrix$singleton[which(rownames(formula.drop.matrix) %in% names(singletons))] = 1
+
+# define P formulas
+p.formulas = rownames(mol)[which(mol$P > 0)]
+formula.drop.matrix$P[which(rownames(formula.drop.matrix) %in% p.formulas)] = 1
+
+# define masses out of range
+bad.mass.formulas = rownames(mol)[which(as.numeric(rownames(mol)) < 200 | as.numeric(rownames(mol)) > 800)]
+formula.drop.matrix$mass[which(rownames(formula.drop.matrix) %in% bad.mass.formulas)] = 1
+
+# define O:C 
+OC.formulas = rownames(mol)[which(mol$OtoC_ratio > 1)]
+formula.drop.matrix$OtoC[which(rownames(formula.drop.matrix) %in% OC.formulas)] = 1
+
+# define H:C
+HC.formulas = rownames(mol)[which(mol$HtoC_ratio > 2.5 | mol$HtoC_ratio < 0.3)]
+formula.drop.matrix$HtoC[which(rownames(formula.drop.matrix) %in% HC.formulas)] = 1
+
+# define DBE minus C
+DBE.C.formulas = rownames(mol)[which(mol$DBE_1 <= I(mol$C*0.6 - 15))]
+formula.drop.matrix$DBE_1[which(rownames(formula.drop.matrix) %in% DBE.C.formulas)] = 1
+
+# define DBE minus O
+DBE.O.formulas = rownames(mol)[which(mol$DBE_O < I(-10) | mol$DBE_O > 10)]
+formula.drop.matrix$DBE_O[which(rownames(formula.drop.matrix) %in% DBE.O.formulas)] = 1
+
+# number of drops per filter
+colSums(x = formula.drop.matrix,na.rm = T)
+#singleton         P      HtoC      OtoC     DBE_1     DBE_O      mass 
+#80211    104223       244      4941     20441     92566     54028 
+
+# number of filters per formula
+filters.per.formula = rowSums(x = formula.drop.matrix,na.rm = T)
+range(filters.per.formula)
+formula.to.drop = names(filters.per.formula)[which(filters.per.formula > 0)]
+length(formula.to.drop)
+
+# trim down mol
+mol.trim = mol[-which(rownames(mol) %in% formula.to.drop),]
+dim(mol.trim)
+summary(mol.trim)
+
+# make Van-K plot
+plot(mol.trim$HtoC_ratio ~ mol.trim$OtoC_ratio,cex=0.3)
+
+# trim down the data file
+data.trim = data[which(rownames(data) %in% rownames(mol.trim)),]
+dim(data.trim)
+
+# look at formula richness distribution
+sample.richness = colSums(x = data.trim)
+hist(sample.richness)
+
+# needs to be True
+identical(x = row.names(data.trim), y = row.names(mol.trim))
+
+# write out files
+# fwrite(x = mol.trim, file = "DOM_Synthesis_Mol_Trim.csv")
+# fwrite(x = data.trim, file = "DOM_Synthesis_Data_Trim.csv")
+
+rm(formula.drop.matrix)
+rm(data, mol,dataset.data, dataset.mol)
+rm(bad.mass.formulas, DBE.C.formulas, DBE.O.formulas, filters.per.formula, formula.occurence, formula.to.drop, HC.formulas, OC.formulas, p.formulas, singletons, w)
+
+```
+
+
+# Read final, trimmed data
+using James code
+
+```{r read trimed data, cache=T}
+
+# data = read.csv("Merged_Processed_Data - 10-19-23.csv", check.names = F, row.names = 1)
+data.trim = data.frame(fread("DOM_Synthesis_Data_Trim.csv", check.names = F), row.names = 1)
+# mol = read.csv("Merged_Processed_Mol - 10-19-23.csv", check.names = F, row.names = 1)
+mol.trim = data.frame(fread("DOM_Synthesis_Mol_Trim.csv", check.names = F), row.names = 1)
+
+# Breaking apart by dataset
+factors.trim = data.frame(Sample = colnames(data.trim),
+                     Dataset = str_extract(colnames(data.trim), "[^_]+"))
+
+```
+
+
+```{r prepare trimed data for metric distribution, cache=T}
+# Create empty object
+dataset.data.trim = data.frame(matrix(nrow = nrow(data.trim), ncol = length(unique(factors.trim$Dataset)),
+                                 dimnames = list(row.names(data.trim),
+                                                 unique(factors.trim$Dataset))),
+                          check.names = F)
+
+# Summarize presence/absence by dataset
+for(i in 1:ncol(dataset.data.trim)){
+  # current dataset
+  curr.data = colnames(dataset.data.trim)[i]
+  
+  # Select matching samples
+  temp.data = data.trim[,which(factors.trim$Dataset %in% curr.data)]
+  
+  # add in sums to pregenerated object
+  dataset.data.trim[,i] = rowSums(temp.data)
+  
+  # cleanup
+  rm(temp.data, curr.data)
+}
+
+# Convert to presence/absence
+dataset.data.trim[dataset.data.trim > 0] = 1
+
+# Generate mol file with dataset information
+dataset.mol.trim = NULL
+
+for(i in 1:ncol(dataset.data.trim)){
+  # find formulas
+  w = which(dataset.data.trim[,i] > 0)
+  
+  # find corresponding molecular information
+  temp = mol.trim[w,]
+  
+  # add dataset information
+  temp$Dataset = colnames(dataset.data.trim)[i]
+  
+  # add in to dataset.mol
+  dataset.mol.trim = rbind(dataset.mol.trim, temp)
+  
+}
+```
+
+```{r plotting metric distribution, message=FALSE, warning=FALSE}
+
+# plotting metric distribution
+dataset.mol.trim %>% select(Dataset, AI_Mod, DBE_1, NOSC, OtoC_ratio, HtoC_ratio) %>%
+  gather(Variable, Value, -Dataset) %>%
+  ggplot(aes(x = Value, y = Dataset))+
+  geom_density_ridges(aes(fill = Dataset), alpha = 0.5)+
+  facet_wrap(.~Variable, scales = "free")+
+  xlab("Derived DOM Metric")+
+  theme_bw()
+
+
+```
+
+
+
+# Merge Data and Mol Tables
+```{r merge data and mol}
+
+
+# quick check
+sum(is.na(data.trim))
+
+tmp <- as.data.table(data.trim)[, mz := row.names(data.trim)]
+
+tmp2 <- as.data.table(mol.trim)[, mz := row.names(mol.trim)]
+
+tmp3 <- merge(tmp2, tmp, by = "mz")
+
+# Replace zeros with "NA"
+cols_to_replace <- colnames(data.trim)
+
+tmp3[, (cols_to_replace) := lapply(.SD, function(x) ifelse(x == 0, NA, x)), .SDcols = cols_to_replace]
+
+# renormalize to 0:1000
+
+tmp3[, (cols_to_replace) := lapply(.SD, function(x) scales::rescale(x, to = c(0, 1000))), .SDcols = cols_to_replace]
+
+tmp4 <- melt(tmp3, id.vars = colnames(tmp3)[!colnames(tmp3) %in% cols_to_replace], value.name = "Intensity", variable.name = "Sample", measure.vars = cols_to_replace, na.rm = T)
+# tmp <- tmp[intensity == 0,]
+
+tmp4[, Dataset := str_extract(Sample, "[^_]+")]
+
+tmp4[is.infinite(Intensity), .N]
+
+# merged data table
+data.mol.trim <- copy(tmp4)
+
+
+```
+
+Note that some samples had missing MF at this stage of data processing and were removed from the data
+
+# MF Distribution
+```{r}
+
+ggplot(data.mol.trim[, .N, by = c("Dataset", "Sample")], aes(x = Dataset, y = N, fill = Dataset)) + geom_violin() + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggplot(data.mol.trim[, .N, by = c("Sample")], aes(y = N, x = "All Data")) + geom_violin(trim = T) + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+Molecular_number_threshold <- 500
+
+```
+
+
+
+# Heteroatom Class Distributions
+```{r factors for sorting}
+
+fctr_lvls_cho <- c("O1",
+"O2",
+"O3",
+"O4",
+"O5",
+"O6",
+"O7",
+"O8",
+"O9",
+"O10",
+"O11",
+"O12",
+"O13",
+"O14",
+"O15",
+"O16",
+"O17",
+"O18",
+"O19",
+"O20",
+"O21",
+"O22",
+"O23",
+"O24",
+"O25")
+
+fctr_lvls_n <- c("N1 O1",
+"N1 O2",
+"N1 O3",
+"N1 O4",
+"N1 O5",
+"N1 O6",
+"N1 O7",
+"N1 O8",
+"N1 O9",
+"N1 O10",
+"N1 O11",
+"N1 O12",
+"N1 O13",
+"N1 O14",
+"N1 O15",
+"N1 O16",
+"N1 O17",
+"N1 O18",
+"N1 O19",
+"N1 O20",
+"N1 O21",
+"N1 O22",
+"N1 O23",
+"N1 O24",
+"N1 O25",
+"N2 O1",
+"N2 O2",
+"N2 O3",
+"N2 O4",
+"N2 O5",
+"N2 O6",
+"N2 O7",
+"N2 O8",
+"N2 O9",
+"N2 O10",
+"N2 O11",
+"N2 O12",
+"N2 O13",
+"N2 O14",
+"N2 O15",
+"N2 O16",
+"N2 O17",
+"N2 O18",
+"N2 O19",
+"N2 O20",
+"N2 O21",
+"N2 O22",
+"N2 O23",
+"N2 O24",
+"N2 O25")
+
+fctr_lvls_s <- c("S1 O1",
+"S1 O2",
+"S1 O3",
+"S1 O4",
+"S1 O5",
+"S1 O6",
+"S1 O7",
+"S1 O8",
+"S1 O9",
+"S1 O10",
+"S1 O11",
+"S1 O12",
+"S1 O13",
+"S1 O14",
+"S1 O15",
+"S1 O16",
+"S1 O17",
+"S1 O18",
+"S1 O19",
+"S1 O20",
+"S1 O21",
+"S1 O22",
+"S1 O23",
+"S1 O24",
+"S1 O25",
+"S2 O1",
+"S2 O2",
+"S2 O3",
+"S2 O4",
+"S2 O5",
+"S2 O6",
+"S2 O7",
+"S2 O8",
+"S2 O9",
+"S2 O10",
+"S2 O11",
+"S2 O12",
+"S2 O13",
+"S2 O14",
+"S2 O15",
+"S2 O16",
+"S2 O17",
+"S2 O18",
+"S2 O19",
+"S2 O20",
+"S2 O21",
+"S2 O22",
+"S2 O23",
+"S2 O24",
+"S2 O25")
+
+fctr_lvls_ns <- c("N1 S1 O1",
+"N1 S1 O2",
+"N1 S1 O3",
+"N1 S1 O4",
+"N1 S1 O5",
+"N1 S1 O6",
+"N1 S1 O7",
+"N1 S1 O8",
+"N1 S1 O9",
+"N1 S1 O10",
+"N1 S1 O11",
+"N1 S1 O12",
+"N1 S1 O13",
+"N1 S1 O14",
+"N1 S1 O15",
+"N1 S1 O16",
+"N1 S1 O17",
+"N1 S1 O18",
+"N1 S1 O19",
+"N1 S1 O20",
+"N1 S1 O21",
+"N1 S1 O22",
+"N1 S1 O23",
+"N1 S1 O24",
+"N1 S1 O25",
+"N2 S1 O1",
+"N2 S1 O2",
+"N2 S1 O3",
+"N2 S1 O4",
+"N2 S1 O5",
+"N2 S1 O6",
+"N2 S1 O7",
+"N2 S1 O8",
+"N2 S1 O9",
+"N2 S1 O10",
+"N2 S1 O11",
+"N2 S1 O12",
+"N2 S1 O13",
+"N2 S1 O14",
+"N2 S1 O15",
+"N2 S1 O16",
+"N2 S1 O17",
+"N2 S1 O18",
+"N2 S1 O19",
+"N2 S1 O20",
+"N2 S1 O21",
+"N2 S1 O22",
+"N2 S1 O23",
+"N2 S1 O24",
+"N2 S1 O25",
+"N1 S2 O1",
+"N1 S2 O2",
+"N1 S2 O3",
+"N1 S2 O4",
+"N1 S2 O5",
+"N1 S2 O6",
+"N1 S2 O7",
+"N1 S2 O8",
+"N1 S2 O9",
+"N1 S2 O10",
+"N1 S2 O11",
+"N1 S2 O12",
+"N1 S2 O13",
+"N1 S2 O14",
+"N1 S2 O15",
+"N1 S2 O16",
+"N1 S2 O17",
+"N1 S2 O18",
+"N1 S2 O19",
+"N1 S2 O20",
+"N1 S2 O21",
+"N1 S2 O22",
+"N1 S2 O23",
+"N1 S2 O24",
+"N1 S2 O25",
+"N2 S2 O1",
+"N2 S2 O2",
+"N2 S2 O3",
+"N2 S2 O4",
+"N2 S2 O5",
+"N2 S2 O6",
+"N2 S2 O7",
+"N2 S2 O8",
+"N2 S2 O9",
+"N2 S2 O10",
+"N2 S2 O11",
+"N2 S2 O12",
+"N2 S2 O13",
+"N2 S2 O14",
+"N2 S2 O15",
+"N2 S2 O16",
+"N2 S2 O17",
+"N2 S2 O18",
+"N2 S2 O19",
+"N2 S2 O20",
+"N2 S2 O21",
+"N2 S2 O22",
+"N2 S2 O23",
+"N2 S2 O24",
+"N2 S2 O25")
+
+```
+
+```{r plot distribution by major element, message=FALSE, warning=FALSE}
+
+het_check <- data.mol.trim[, .N, by = c("Heteroatom.Class", "Sample", "Dataset")][, .(mean_count = mean(N)), by = c("Heteroatom.Class", "Dataset")]
+
+test <- copy(het_check)
+
+for (het in c("CHO", "N", "S", "N+S")) {
+
+  if (het == "CHO") {
+  
+      test_data <- test[!grepl(pattern = "N", Heteroatom.Class) & !grepl(pattern = "S", Heteroatom.Class), ] %>% dcast(., Heteroatom.Class~Dataset, value.var = "mean_count" , fill = 0)
+            test_data[, Heteroatom.Class := factor(Heteroatom.Class, levels = fctr_lvls_cho)]
+
+  }
+  
+    if (het == "N") {
+  
+      test_data <- test[grepl(pattern = "N", Heteroatom.Class) & !grepl(pattern = "S", Heteroatom.Class), ] %>% dcast(., Heteroatom.Class~Dataset, value.var = "mean_count" , fill = 0)
+            test_data[, Heteroatom.Class := factor(Heteroatom.Class, levels = fctr_lvls_n)]
+
+    }
+  
+      if (het == "S") {
+  
+      test_data <- test[!grepl(pattern = "N", Heteroatom.Class) & grepl(pattern = "S", Heteroatom.Class), ] %>% dcast(., Heteroatom.Class~Dataset, value.var = "mean_count" , fill = 0)
+            test_data[, Heteroatom.Class := factor(Heteroatom.Class, levels = fctr_lvls_s)]
+
+      }
+  
+      if (het == "N+S") {
+  
+      test_data <- test[grepl(pattern = "N", Heteroatom.Class) & grepl(pattern = "S", Heteroatom.Class), ] %>% dcast(., Heteroatom.Class~Dataset, value.var = "mean_count" , fill = 0)
+      test_data[, Heteroatom.Class := factor(Heteroatom.Class, levels = fctr_lvls_ns)]
+
+}
+
+setkeyv(test_data, cols = "Heteroatom.Class")
+
+print(heatmap(as.matrix(test_data, rownames = "Heteroatom.Class"), Rowv = NA, Colv = NA, revC = T, ylab = "Heteroatom.Class", xlab = "Dataset", scale = "none", main = het, keep.dendro = F))
+
+  }
+
+```
+
+# Read Aggregated Values
+using Dings code
+
+```{r read aggregated values}
+
+# load files and do some renaming + remove samples with 0 MF
+# Weighted averages
+data.mol.trim.agg_wa <- fread("Summary_Andrew_crosstab_wihout_iso_wa.csv")
+names(data.mol.trim.agg_wa)[which(names(data.mol.trim.agg_wa ) == "variable")] <- "Sample"
+data.mol.trim.agg_wa <- data.mol.trim.agg_wa[Molecular_number > 0] %>% .[, Dataset := str_extract(Sample, "[^_]+")]
+
+# Number averages
+data.mol.trim.agg_na <- fread("Summary_Andrew_crosstab_wihout_iso_na.csv")
+names(data.mol.trim.agg_na)[which(names(data.mol.trim.agg_na) == "variable")] <- "Sample"
+data.mol.trim.agg_na <- data.mol.trim.agg_na[Molecular_number > 0] %>% .[, Dataset := str_extract(Sample, "[^_]+")]
+names(data.mol.trim.agg_na) <- sub("_wa", "_na", names(data.mol.trim.agg_na))
+
+
+```
+
+# Read Metadata
+```{r read metadata}
+
+metadata <- fread("AH_metadata_merge.csv", na.strings = c("NA", ""))
+
+# filter data without coreMS filename
+
+metadata <- metadata[!is.na(coreMSname)]
+
+# renaming
+
+metadata[, Sample := coreMSname]
+
+
+```
+
+
+```{r merge metadata with aggregated data}
+
+data.mol.trim.agg_na[, Sample := sub(".csv", "", Sample)]
+data.mol.trim.agg_wa[, Sample := sub(".csv", "", Sample)]
+
+data.mol.trim.agg_na.meta <- merge(data.mol.trim.agg_na, metadata, by = "Sample")
+data.mol.trim.agg_wa.meta <- merge(data.mol.trim.agg_wa, metadata, by = "Sample")
+
+```
+
+The number of matches is lower than in the original files!
+
+```{r overview}
+
+data.mol.trim.agg_na.meta[, .N, by = "type"]
+
+
+```
+
+
+# QC plots
+## Weighted and number averaged per Dataset
+```{r plot wa distributions per dataset, message=FALSE, warning=FALSE}
+
+test <- melt(data.mol.trim.agg_wa, value.name = "wa_value", id.vars = c("Dataset", "Sample"))
+
+ggplot(test, aes(x = Dataset, y = wa_value)) + geom_boxplot() + facet_wrap("variable", scales = "free") + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+ 
+```
+
+```{r plot na distributions per dataset, message=FALSE, warning=FALSE}
+
+test <- melt(data.mol.trim.agg_na, value.name = "wa_value", id.vars = c("Dataset", "Sample"))
+
+ggplot(test, aes(x = Dataset, y = wa_value)) + geom_boxplot() + facet_wrap("variable", scales = "free") + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+ 
+```
+
+```{r correlate na with wa}
+
+cols_to_use <- c("H.C", "O.C", "MZ", "AI.mod")
+
+for (n in cols_to_use) {
+  
+  test <- merge(data.mol.trim.agg_na[Molecular_number > Molecular_number_threshold, .(Sample, Dataset, .SD), .SDcols = paste0(n, "_na")], data.mol.trim.agg_wa[Molecular_number > Molecular_number_threshold, .(Sample, .SD), .SDcols = paste0(n, "_wa")], by = "Sample")
+  names(test) <- sub(".SD.", "", names(test))
+  
+  print(ggplot(test, aes(x = get(paste0(n, "_na")), y = get(paste0(n, "_wa")), color = Dataset)) + geom_point() + labs(title = n))
+  
+  
+}
+
+
+
+```
+
+
+
+## Main Molecular Descriptors
+```{r overall sample distributions}
+
+# check dependency on # Assignments
+ggplot(data.mol.trim.agg_wa, aes(x = Molecular_number, y = MZ_wa, color = Dataset)) + geom_point() + labs(title = paste0("All Samples"))
+ggplot(data.mol.trim.agg_wa[Molecular_number >= Molecular_number_threshold], aes(x = O.C_wa, y = H.C_wa, color = Dataset)) + geom_point() + labs(title = paste0("Samples with more than ", Molecular_number_threshold, " assignments"))
+ggplot(data.mol.trim.agg_wa[Molecular_number < Molecular_number_threshold], aes(x = O.C_wa, y = H.C_wa, color = Dataset)) + geom_point() + labs(title = paste0("Samples with less than ", Molecular_number_threshold, " assignments"))
+
+```
+
+
+
+
+```{r}
+library(LambdaMineR)
+set_LM_plot_style()
+
+formulas.trim <- copy(data.mol.trim)
+names(formulas.trim)[which(names(formulas.trim) == "Sample")] <- "measurement_name" 
+names(formulas.trim)[which(names(formulas.trim) == "OtoC_ratio")] <- "formula_oc"
+names(formulas.trim)[which(names(formulas.trim) == "HtoC_ratio")] <- "formula_hc" 
+names(formulas.trim)[which(names(formulas.trim) == "Intensity")] <- "peak_intensity" 
+names(formulas.trim)[which(names(formulas.trim) == "Molecular.Formula")] <- "formula_string" 
+
+plot_vK(formulas.trim, "ManyFiles_Nelha_054_01_23226.corems", color_var = "peak_intensity")
+
+```
+
