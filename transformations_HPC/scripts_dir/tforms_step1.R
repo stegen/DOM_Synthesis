@@ -79,7 +79,7 @@ counter = 0
 #idx <- 2
 
 #KL changed syntax a little because my brain operates this way
-for (idx in 1:length(samples.to.process)) {
+for (idx in 547:length(samples.to.process)) {
 #for (idx in 2:2) {
 #for (idx in 1:5) {
   
@@ -134,6 +134,16 @@ for (idx in 1:length(samples.to.process)) {
     tot.trans = rbind(tot.trans,c(dist.unique,nrow(Distance_Results),nrow(Sample_Peak_Mat),nrow(Distance_Results)/nrow(Sample_Peak_Mat)))
     
     ##### write out current tot.trans in case crash
+    #export out one line and use that to assemble the details needed from each sample later
+    tot.trans <- c(dist.unique,nrow(Distance_Results),nrow(Sample_Peak_Mat),nrow(Distance_Results)/nrow(Sample_Peak_Mat))
+    #make this one row, with headers
+    tot.trans <- t(tot.trans)
+    colnames <- c("dist.unique","nDistance_Results","n_Sample_Peak_Mat","n_ratio")
+    colnames(tot.trans) <- colnames 
+    #now write that to a text file
+    write.csv(tot.trans,paste(out_dir,"Summary_",dist.unique,".csv",sep=""),quote = F,row.names = F)
+    
+    
     #KL turn this off for now
    #  # format the total transformations matrix and write it out
    #  tot.trans.out = as.data.frame(tot.trans)

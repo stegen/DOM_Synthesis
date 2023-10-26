@@ -1,10 +1,10 @@
 # Set up R script from James Stegen (PNNL) R script on transformations for an HPC
 # Use this version to set this up as a set of parallel processes
-#now do the transformation calculations
+# step2: now do the transformation calculations
 #KL 25 October 2023
 library(dplyr)
 library(tidyr)
-args = commandArgs(trailingOnly=TRUE)
+args = commandArgs(trailingOnly=TRUE) #remember need this to use the args from the slurm script
 
 #HPC - the slurm script version
 in_dir <- paste0(args[1])
@@ -44,8 +44,11 @@ tot.trans = numeric()
   #set current sample above
 
   print(date())
-  
+
+  #issue here..but out of steam
+  %%%
   one.sample.matrix = cbind(as.numeric(as.character(row.names(data))), data[,which(colnames(data) == current.sample), drop = FALSE]) # "drop = FALSE" ensures that the row and column names remain associated with the data
+
   colnames(one.sample.matrix) = c("peak", colnames(one.sample.matrix[2]))
   # print(head(one.sample.matrix))
   
