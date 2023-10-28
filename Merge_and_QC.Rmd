@@ -1,20 +1,25 @@
 ---
 title: "Data merging and QC script"
-author: c("Robert Danczak", "Oliver J. Lechtenfeld", "James Stegen", "Andrew Tanenzap", "et al")
+author: c("Robert Danczak", "Oliver J. Lechtenfeld", "James Stegen", "Andrew Tanenzap", "et al.")
 date: "`r Sys.Date()`"
 output: html_document
 ---
 
 # Project Setup {-}
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = TRUE,
+	warning = TRUE
+)
 library(data.table)
 library(here)
 library(tidyverse)
 library(ggpubr)
 library(ggridges)
 library(googledrive)
+library(todor)
+library(scales)
 
 ```
 
@@ -26,11 +31,16 @@ drive_auth() # use the same Google Account used to access the Google Drive Folde
 # However, when knitting the markdown it uses the pre-cached token (with a note)
 
 ```
+
+
 ## Global Settings
 ```{r Global settings}
 
 # Initiate molecular number threshold
 Molecular_number_threshold <- 0
+
+# Should original data be kept after trimming?
+keep_orig_data <- F
 
 # make sure files are up to date and downloaded to working directory during knitting
 if (isTRUE(getOption('knitr.in.progress'))) { 
@@ -41,13 +51,12 @@ if (isTRUE(getOption('knitr.in.progress'))) {
 } else {
   
 # decide if files shall be updated (both directions) or not  
-  download_files <- F
+  download_files <- F # This is at least required upon first execution of the markdown
   upload_files <- F
   
 }
 
 ```
-
 
 
 # Download Input Files from Google Drive
@@ -109,28 +118,47 @@ setkeyv(mol, "Calibrated m/z")
 
 
 ```
+## Data Consistency Check
+```{r data consistency check}
 
-```{r consistency check}
+# check m/z value in both input tables
+if (!base::setequal(data[, `Calibrated m/z`], mol[, `Calibrated m/z`])) {warning("Could not match all m/z values in data and mol table!"); cat("\n")} 
 
 # collect mismatching m/z values
 mz_to_remove_from_data <- fsetdiff(data[, .(`Calibrated m/z`)], mol[, .(`Calibrated m/z`)])
 mz_to_remove_from_mol <- fsetdiff(mol[, .(`Calibrated m/z`)], data[, .(`Calibrated m/z`)])
 
-# remove m/z values not present in both data and mol objects
-data <- data[!`Calibrated m/z` %in% unlist(mz_to_remove_from_data)]
-mol <- mol[!`Calibrated m/z` %in% unlist(mz_to_remove_from_mol)]
+message(paste0("Removing ", mz_to_remove_from_mol[, .N], " non-matching m/z values."), appendLF = T)
 
-# check
-fsetdiff(data[, .(`Calibrated m/z`)], mol[, .(`Calibrated m/z`)]) # should be zero
+if (mz_to_remove_from_mol[, .N] > 0){
 
-print(paste0("removed ", mz_to_remove_from_mol[, .N], " non-matching m/z values."))
+  removed_mz <- data.table(
+    MF = mol[mz_to_remove_from_mol, `Molecular Formula`],
+    mz_mol = mol[mz_to_remove_from_mol, `Calibrated m/z`],
+    mz_data = data[mz_to_remove_from_data, `Calibrated m/z`]
+  ) 
+  cat(paste0("The following molecuar formulas will be discared \n", paste(unlist(removed_mz[, MF]), collapse = "\n"), "\n"))
 
+  # remove m/z values not present in both data and mol objects
+  data <- data[!`Calibrated m/z` %in% unlist(mz_to_remove_from_data)]
+  mol <- mol[!`Calibrated m/z` %in% unlist(mz_to_remove_from_mol)]
+  
+
+  message(paste0(mol[, .N] , " molecular formulas remaining."), appendLF = T)
+}
+
+# check again
+if (!base::setequal(data[, `Calibrated m/z`], mol[, `Calibrated m/z`])) {warning("Could still not match all m/z values in data and mol table!"); cat("\n")} 
+    
 rm(mz_to_remove_from_data, mz_to_remove_from_mol)
 
 ```
 
+Each time the data is read, a different set of m/z values will be removed due to rounding issues during fread. 
+TODO: Need to use different index column and not rownames
 
-Using Bobs code
+## Calculate Metrics
+Using Bobs code:
 ```{r prepare original data for metric distribution, cache=T}
 
 data <- data.frame(data, row.names = 1)
@@ -181,7 +209,7 @@ for(i in 1:ncol(dataset.data)){
 }
 
 # cleanup
-rm(factors, temp, temp.data, curr.data, w, i)
+rm(factors, temp, temp.data, curr.data, w, i, dataset.data)
 
 ```
 
@@ -197,12 +225,13 @@ dataset.mol %>% select(Dataset, AI_Mod, DBE_1, NOSC, OtoC_ratio, HtoC_ratio) %>%
   xlab("Derived DOM Metric")+
   theme_bw()
 
+rm(dataset.mol)
 
 ```
 
 # Trim Data
 
-Using James's script and parameters; set chunk option to: eval = false, include = false, if a different trimmed file is used below.  
+Using James's script and parameters; set chunk option to: "eval = false, include = false", if a different trimmed file is used below.  
 ```{r prepare trimed data from original data}
 
 # QC data matrix
@@ -270,11 +299,10 @@ identical(x = row.names(data.trim), y = row.names(mol.trim))
 
 # cleanup
 rm(formula.drop.matrix)
-rm(dataset.data, dataset.mol)
-rm(bad.mass.formulas, DBE.C.formulas, DBE.O.formulas, filters.per.formula, formula.occurence, formula.to.drop, HC.formulas, OC.formulas, p.formulas, singletons)
+rm(bad.mass.formulas, DBE.C.formulas, DBE.O.formulas, filters.per.formula, formula.occurence, formula.to.drop, HC.formulas, OC.formulas, p.formulas, singletons, sample.richness)
 
-# comment this out in case you want to keep the original data tables
-rm(data, mol, sample.richness)
+# keep or remove original data
+if (!keep_orig_data) {rm(data, mol)}
 
 
 # only write or export if not knitting
@@ -293,6 +321,28 @@ if (!isTRUE(getOption('knitr.in.progress'))) {
   }
 
 }
+
+```
+## Test Trimmed Data
+```{r warning=FALSE}
+
+tmp <- as.data.table(data.trim)[, mz := row.names(data.trim)]
+
+# Select data columns 
+cols_to_test <- colnames(data.trim)
+
+#check if some samples have no intensity value after trimming:
+zero_mf <- melt(tmp[, lapply(.SD, sum, na.rm = T), .SDcols = cols_to_test], verbose = F) %>% .[value == 0, variable] %>% length(.)
+
+if (zero_mf > 0) {
+  message(paste0("There are ", zero_mf, " samples without MF after trimming."), appendLF = TRUE)
+  removed_samples <- droplevels(melt(tmp[, lapply(.SD, sum, na.rm = T), .SDcols = cols_to_test], variable.name = "Sample") %>% .[value == 0, .(Sample)])
+  cat(paste0("Samples \n", paste(unlist(removed_samples), collapse = "\n"), "\nwill be discared because they have no MF"))
+  set(data.trim, , as.character(unlist(removed_samples)), NULL)
+  message(paste0(length(colnames(data.trim)) , " samples remaining"), appendLF = TRUE)
+  }
+
+rm(tmp, cols_to_test)
 
 ```
 
@@ -360,7 +410,7 @@ for(i in 1:ncol(dataset.data.trim)){
 }
 
 # cleanup 
-rm(factors.trim, temp, temp.data, curr.data, w, i)
+rm(factors.trim, temp, w, i, dataset.data.trim)
 
 ```
 
@@ -376,6 +426,7 @@ dataset.mol.trim %>% select(Dataset, AI_Mod, DBE_1, NOSC, OtoC_ratio, HtoC_ratio
   xlab("Derived DOM Metric")+
   theme_bw()
 
+rm(dataset.mol.trim)
 
 ```
 
@@ -454,7 +505,7 @@ if (!isTRUE(getOption('knitr.in.progress'))) {
 }
 
 # clean up
-rm(info, out, temp, df, CHEMICAL_ELEMENTS)
+rm(info, out, temp, df, CHEMICAL_ELEMENTS, mol.rownames, i)
 
 ```
 
@@ -471,9 +522,7 @@ rm(info, out, temp, df, CHEMICAL_ELEMENTS)
 # Merge Data and Mol Tables
 ```{r merge data and mol}
 
-# working with the trimed data here for now:
-# quick check
-sum(is.na(data.trim)) # should be zero at this point
+# working with the trimmed data here for now:
 
 tmp <- as.data.table(data.trim)[, mz := row.names(data.trim)]
 
@@ -481,21 +530,21 @@ tmp2 <- as.data.table(mol.trim)[, mz := row.names(mol.trim)]
 
 tmp3 <- merge(tmp2, tmp, by = "mz")
 
-# Replace zeros with "NA"
+# Select data columns 
 cols_to_replace <- colnames(data.trim)
 
+# check merging
+if (all(cols_to_replace %in% colnames(tmp3)[(length(colnames(tmp2))+1):length(colnames(tmp3))])) {message(paste0("Merging successful"), appendLF = TRUE)} else {warning(paste0("The following samples were not merged: ", colnames(tmp3)[which(!cols_to_replace %in% colnames(tmp3)[(length(colnames(tmp2))+1):length(colnames(tmp3))])]))}
+
+# Replace zeros with "NA" in data columns
 tmp3[, (cols_to_replace) := lapply(.SD, function(x) ifelse(x == 0, NA, x)), .SDcols = cols_to_replace]
 
 # renormalize to 0:1000
-
 tmp3[, (cols_to_replace) := lapply(.SD, function(x) scales::rescale(x, to = c(0, 1000))), .SDcols = cols_to_replace]
 
 tmp4 <- melt(tmp3, id.vars = colnames(tmp3)[!colnames(tmp3) %in% cols_to_replace], value.name = "Intensity", variable.name = "Sample", measure.vars = cols_to_replace, na.rm = T)
-# tmp <- tmp[intensity == 0,]
 
 tmp4[, Dataset := str_extract(Sample, "[^_]+")]
-
-tmp4[is.infinite(Intensity), .N]
 
 # merged data table
 data.mol.trim_long <- copy(tmp4)
@@ -504,12 +553,10 @@ data.mol.trim_long <- copy(tmp4)
 data.mol.trim_wide <- copy(tmp3) 
 
 # clean up
-rm(tmp, tmp2, tmp3, tmp4)
+rm(tmp, tmp2, tmp3, tmp4, cols_to_replace, zero_mf)
 
 ```
 
-Note that some samples had missing MF at this stage of data processing and were removed from the data.
-TODO: Check this!
 
 ----------------------------------------------------------------------------------------------------
 
@@ -518,11 +565,24 @@ TODO: Check this!
 The threshold for excluding samples based on low MF is set here based on the overall distribution of the data
 ```{r}
 
+summary(data.mol.trim_long[, .N, by = c("Sample")])
+
 ggplot(data.mol.trim_long[, .N, by = c("Dataset", "Sample")], aes(x = Dataset, y = N, fill = Dataset)) + geom_violin() + theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ggplot(data.mol.trim_long[, .N, by = c("Sample")], aes(y = N, x = "All Data")) + geom_violin(trim = T) + theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 Molecular_number_threshold <- 500
+
+test <- data.mol.trim_long[, .N, by = c("Sample")][N < Molecular_number_threshold, .N]
+
+message(paste0("There are ", test, " samples with less than ", Molecular_number_threshold, " molecular formulas"), appendLF = TRUE)
+if (test > 0) {
+  lowMF_samples <- droplevels(data.mol.trim_long[, .N, by = c("Sample")][N < Molecular_number_threshold, .(Sample)])
+  cat(paste0("Samples \n", paste(unlist(lowMF_samples), collapse = "\n"), "\nwill be ignored because they have low # of MF", "\n"))
+  message(paste0(data.mol.trim_long[, .N, by = c("Sample")][N >= Molecular_number_threshold, .N] , " samples remaining"), appendLF = TRUE)
+  }
+
+rm(test)
 
 ```
 
@@ -537,7 +597,7 @@ source(here("factor_levels_for_sorting.R"))
 
 ```{r plot distribution by major element, message=FALSE, warning=FALSE}
 
-het_check <- data.mol.trim_long[, .N, by = c("Heteroatom.Class", "Sample", "Dataset")][, .(mean_count = mean(N)), by = c("Heteroatom.Class", "Dataset")]
+het_check <- data.mol.trim_long[!Sample %in% lowMF_samples, .N, by = c("Heteroatom.Class", "Sample", "Dataset")][, .(mean_count = mean(N)), by = c("Heteroatom.Class", "Dataset")]
 
 test <- copy(het_check)
 
@@ -578,14 +638,14 @@ print(heatmap(as.matrix(test_data, rownames = "Heteroatom.Class"), Rowv = NA, Co
 }
 
 
-rm(test, test_data)
+rm(test, test_data, het, het_check)
 
 ```
 
 ----------------------------------------------------------------------------------------------------
 
 # Adding More Data and Indices
-## TODO: Diversity Metrics from Andrew 
+## TODO: Include Diversity Metrics from Andrew 
 ```{r Diversity Metrics from Andrew}
 
 # Placeholder for the code from Andrew
@@ -629,7 +689,7 @@ source("aggregated_value_calculations.R")
 # select samples columns
 smp <- as.character(data.mol.trim_long[, unique(Sample)])
 # select variable columns 
-cols_to_use <- names(mol.trim)[-which(names(mol.trim) %in% c("Molecular.Formula", "Is.Isotopologue", "Heteroatom.Class", "m.z.Error..ppm.", "MolForm", "NtoP_ratio", "bs1_class", "bs2_class", "bs3_class"))] # removed NtoP_ration for now, since the trimmed data do not conatins this element currently.
+cols_to_use <- names(mol.trim)[-which(names(mol.trim) %in% c("Molecular.Formula", "Is.Isotopologue", "Heteroatom.Class", "m.z.Error..ppm.", "MolForm", "NtoP_ratio", "bs1_class", "bs2_class", "bs3_class"))] # removed NtoP_ratio for now, since the trimmed data does not contain this element currently.
 
 # calculate the number of formulas
 counts <- data.mol.trim_long[, .(Molecular_number = .N), by = "Sample"]
@@ -672,7 +732,7 @@ rm(smp, cols_to_use, agg, counts, tmp)
 
 
 ```
-
+TODO: Make aggregate value calculation code more efficient
 
 # Read Metadata
 ```{r read metadata}
@@ -701,7 +761,7 @@ data.mol.trim.agg_wa.meta <- merge(data.mol.trim.agg_wa, metadata, by = "Sample"
 ```
 
 The number of matches is lower than in the original files!
-TODO: Check this!
+TODO: Check which samples are removed during merging of aggregated data with metadata
 
 ```{r quick overview of data basis}
 
