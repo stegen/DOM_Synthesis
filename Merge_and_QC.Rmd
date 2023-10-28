@@ -1,6 +1,6 @@
 ---
 title: "Data merging and QC script"
-author: c("Robert Danczak", "Oliver J. Lechtenfeld", "James Stegen", "Andrew Tanenzap", "et al.")
+author: c("Robert Danczak", "Oliver J. Lechtenfeld", "James Stegen", "Andrew Tanenzap", "et al")
 date: "`r Sys.Date()`"
 output: html_document
 ---
