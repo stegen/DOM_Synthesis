@@ -41,6 +41,16 @@ Now make this do the calculations in parallel - take better advantage of the HPC
 Working here on poseidon:\
 ```/vortexfs1/home/klongnecker/DOM_Synthesis/transformations_HPC/scripts_dir```
 
+Also note that I now have two branches in this repository, where **main** has the version that works on the HPC and **loopVersion** has the first attempt at brute forcing and keeping the for loop. I can swap between the two when working locally using Git Bash as follows:\
+```git checkout loopVersion```\
+Then do stuff to loopVersion, and push back up using the standard set of commands:\
+```git add -A```\
+```git commit -am "Brief description goes here"```\
+```git push```\
+Then make sure I remember to go back to primarily working on the main branch:
+```git checkout main```
+
+
 #### Misc. handy functions (keep at end for use during troubleshooting)
 ```conda info --envs```\
 ```conda search r-base```\
